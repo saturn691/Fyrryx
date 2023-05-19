@@ -12,12 +12,16 @@ This GitHub page is secondary to the [google docs](https://docs.google.com/docum
 If you are new to GitHub, here's how to get, make and upload changes into the server.
 
 1. Install [git](https://git-scm.com/book/en/v2/Getting-Started-Installing-Git)
-2. Clone the repository to your local computer
+2. Clone the repository to your local computer by running these commands in the terminal of your working directory:
+```
+git clone https://github.com/saturn691/Fyrryx/
+```
+Alternatively, you can press "<> Code" to download the repository.
 ![image](https://github.com/saturn691/Fyrryx/assets/113542065/d7d978fd-bf98-4dcf-bfde-b7700f0c0ab8)
 3. Run these commands in the terminal of the folder that you are working on (Fyrryx). This saves any changes to your local system. Replace "BRANCH_NAME" with a suitable name (e.g. remote-car or magnetic-field)
 ```
-git checkout master
-git pull origin master
+git checkout main
+git pull origin main
 git checkout -b BRANCH_NAME
 ```
 4. When you are ready to commit changes, run these commands
