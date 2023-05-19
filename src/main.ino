@@ -116,7 +116,7 @@ void setup()
   Serial.println(static_cast<IPAddress>(WiFi.localIP()));
 
   // Establish UDP connection
-  udp.begin(1234);
+  udp.begin(6969);
 }
 
 //Call the server polling function in the main loop
@@ -131,8 +131,15 @@ void loop()
     int len = udp.read(buffer, sizeof(buffer));
     if (len > 0) {
       buffer[len] = '\0'; // Add null-terminator to create a valid C-string
+      
+      // Process the received data as needed
+      Serial.print("Received data: ");
+      Serial.println(buffer);
 
-      // Process the received data as neededs
+      // Send a "pong" if pinged
+      udp.beginPacket(udp.remoteIP(), udp.remotePort());
+      udp.write("Pong!");
+      udp.endPacket();
     }
   }
 }
