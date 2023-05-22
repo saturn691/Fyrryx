@@ -33,7 +33,19 @@ git push origin BRANCH_NAME
 5. Come back to GitHub and press "Compare & pull request"
 6. Leave a comment for good practice so we know what you've done
 7. Press "Create pull request"
-8. Feel free to merge if there are no conflicts, but let us know if there are conflicts. Also leave a message on the group chat.
+8. Leave a message on the group chat and we'll vote to approve the changes.
+
+## Development of code
+
+There are two parts to this- the server and the client. How does this work? We use a protocol called UDP instead of sending HTTP requests. This ensures the fastest connection between the server and the client. 
+
+Dependencies:
+- pygame (for handling controller)
+
+To resolve, run this command in the terminal. If you don't have pip installed there are guides for installing pip (the python module installer).
+```
+pip install pygame
+```
 
 ## Useful links
 
