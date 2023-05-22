@@ -4,7 +4,7 @@ This GitHub page is secondary to the [google docs](https://docs.google.com/docum
 
 ## Timeframe
 
-![image](https://github.com/saturn691/Fyrryx/assets/113542065/4d6d40f5-50d1-4c6e-a704-5d78e693fb94)
+![image](https://github.com/saturn691/Fyrryx/assets/113542065/a43d8117-d57a-4dd4-93b6-6bfc5c188b2c)
 ![image](https://github.com/saturn691/Fyrryx/assets/113542065/40281e09-33d9-4ecf-9007-517971ebe35e)
 
 ## How to use this page?
