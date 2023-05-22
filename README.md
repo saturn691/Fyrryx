@@ -4,7 +4,7 @@ This GitHub page is secondary to the [google docs](https://docs.google.com/docum
 
 ## Timeframe
 
-![image](https://github.com/saturn691/Fyrryx/assets/113542065/4d6d40f5-50d1-4c6e-a704-5d78e693fb94)
+![image](https://github.com/saturn691/Fyrryx/assets/113542065/a43d8117-d57a-4dd4-93b6-6bfc5c188b2c)
 ![image](https://github.com/saturn691/Fyrryx/assets/113542065/40281e09-33d9-4ecf-9007-517971ebe35e)
 
 ## How to use this page?
@@ -33,7 +33,19 @@ git push origin BRANCH_NAME
 5. Come back to GitHub and press "Compare & pull request"
 6. Leave a comment for good practice so we know what you've done
 7. Press "Create pull request"
-8. Feel free to merge if there are no conflicts, but let us know if there are conflicts. Also leave a message on the group chat.
+8. Leave a message on the group chat and we'll vote to approve the changes.
+
+## Development of code
+
+There are two parts to this- the server and the client. How does this work? We use a protocol called UDP instead of sending HTTP requests. This ensures the fastest connection between the server and the client. 
+
+Dependencies:
+- pygame (for handling controller)
+
+To resolve, run this command in the terminal. If you don't have pip installed there are guides for installing pip (the python module installer).
+```
+pip install pygame
+```
 
 ## Useful links
 

@@ -1,50 +1,14 @@
 /**************************************************************************************************************************************
-  EEERover Starter Example
-  
-  Based on AdvancedWebServer.ino - Simple Arduino web server sample for SAMD21 running WiFiNINA shield
-  For any WiFi shields, such as WiFiNINA W101, W102, W13x, or custom, such as ESP8266/ESP32-AT, Ethernet, etc
-  
-  WiFiWebServer is a library for the ESP32-based WiFi shields to run WebServer
-  Forked and modified from ESP8266 https://github.com/esp8266/Arduino/releases
-  Forked and modified from Arduino WiFiNINA library https://www.arduino.cc/en/Reference/WiFiNINA
-  Built by Khoi Hoang https://github.com/khoih-prog/WiFiWebServer
-  Licensed under MIT license
-  
-  Copyright (c) 2015, Majenko Technologies
-  All rights reserved.
-  
-  Redistribution and use in source and binary forms, with or without modification,
-  are permitted provided that the following conditions are met:
-  
-  Redistributions of source code must retain the above copyright notice, this
-  list of conditions and the following disclaimer.
-  
-  Redistributions in binary form must reproduce the above copyright notice, this
-  list of conditions and the following disclaimer in the documentation and/or
-  other materials provided with the distribution.
-  
-  Neither the name of Majenko Technologies nor the names of its
-  contributors may be used to endorse or promote products derived from
-  this software without specific prior written permission.
-  
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
-  ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
-  WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
-  DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
-  ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
-  (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
-  LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
-  ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
-  SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+  This code is TOP SECRET and only members of Fyryyx should be able to access this
  ***************************************************************************************************************************************/
 #define USE_WIFI_NINA         false
 #define USE_WIFI101           true
 #include <WiFiWebServer.h>
+#include <WiFiUdp.h>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
-const int groupNumber = 0; // Set your group number to make the IP address constant - only do this on the EEERover network
+const int groupNumber = 7; // Set your group number to make the IP address constant - only do this on the EEERover network
 
 //Webpage to return when root is requested
 const char webpage[] = \
@@ -65,6 +29,7 @@ function ledOff() {xhttp.open(\"GET\", \"/off\"); xhttp.send();}\
 </script></html>";
 
 WiFiWebServer server(80);
+WiFiUDP udp;
 
 //Return the web page
 void handleRoot()
@@ -149,10 +114,32 @@ void setup()
   
   Serial.print(F("HTTP server started @ "));
   Serial.println(static_cast<IPAddress>(WiFi.localIP()));
+
+  // Establish UDP connection
+  udp.begin(6969);
 }
 
 //Call the server polling function in the main loop
 void loop()
 {
   server.handleClient();
+
+  // Recieve and process UDP packets
+  int packetSize = udp.parsePacket();
+  if (packetSize) {
+    char buffer[255];
+    int len = udp.read(buffer, sizeof(buffer));
+    if (len > 0) {
+      buffer[len] = '\0'; // Add null-terminator to create a valid C-string
+      
+      // Process the received data as needed
+      Serial.print("Received data: ");
+      Serial.println(buffer);
+
+      // Send a "pong" if pinged
+      udp.beginPacket(udp.remoteIP(), udp.remotePort());
+      udp.write("Pong!");
+      udp.endPacket();
+    }
+  }
 }
