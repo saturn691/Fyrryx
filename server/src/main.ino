@@ -5,6 +5,8 @@
 #define USE_WIFI101           true
 #include <WiFiWebServer.h>
 #include <WiFiUdp.h>
+#include <headers/ArduinoJson.h>
+#include <headers/receiver.h>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
@@ -28,8 +30,8 @@ function ledOn() {xhttp.open(\"GET\", \"/on\"); xhttp.send();}\
 function ledOff() {xhttp.open(\"GET\", \"/off\"); xhttp.send();}\
 </script></html>";
 
+Receiver receiver;
 WiFiWebServer server(80);
-WiFiUDP udp;
 
 // Return the web page
 void handleRoot()
@@ -67,27 +69,6 @@ void handleNotFound()
     message += " " + server.argName(i) + ": " + server.arg(i) + "\n";
   }
   server.send(404, F("text/plain"), message);
-}
-
-void handleUDPPacket() {
-  // Recieve and process UDP packets
-  int packetSize = udp.parsePacket();
-  if (packetSize) {
-    char buffer[255];
-    int len = udp.read(buffer, sizeof(buffer));
-    if (len > 0) {
-      buffer[len] = '\0'; // Add null-terminator to create a valid C-string
-      
-      // Process the received data as needed
-      Serial.print("Received data: ");
-      Serial.println(buffer);
-
-      // Send a "pong" if pinged
-      udp.beginPacket(udp.remoteIP(), udp.remotePort());
-      udp.write("Pong!");
-      udp.endPacket();
-    }
-  }
 }
 
 void setup()
@@ -137,12 +118,12 @@ void setup()
   Serial.println(static_cast<IPAddress>(WiFi.localIP()));
 
   // Establish UDP connection at port 6969
-  udp.begin(6969);
+  receiver.udp.begin(6969);
 }
 
 // Call the server polling function in the main loop
 void loop()
 {
   server.handleClient();
-  handleUDPPacket();
+  receiver.handleUDPPacket();
 }

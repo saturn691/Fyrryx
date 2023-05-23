@@ -1,4 +1,3 @@
-import socket
 from xbox_controller import XboxController
 from transmitter import Transmitter
 
@@ -14,5 +13,3 @@ while True:
     button_inputs = controller.get_button_inputs()
     transmitter.handleInputs(axis_inputs, button_inputs)
     transmitter.receiveData()
-   
-sock.close()

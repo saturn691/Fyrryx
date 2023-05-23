@@ -73,11 +73,22 @@ class Transmitter:
         self.sock.sendto(json_data.encode(), server_address)
 
     def receiveData(self):
-        data, addr = self.sock.recvfrom(1024)
-        
+        try:
+            data, addr = self.sock.recvfrom(1024)
+        except TimeoutError:
+            return
+
         json_data = data.decode()
-        received_data = json.loads(json_data)
+        received_data = None
+
+        try:
+            received_data = json.loads(json_data)
+        except json.JSONDecodeError as e:
+            pass
         
-        for key, value in received_data.items():
-            if value is not None:
-                print(key, ":", value)
+        if received_data:
+            for key, value in received_data.items():
+                if value is not None:
+                    print(key, ":", value)
+        else:
+            pass
