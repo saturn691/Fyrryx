@@ -1,3 +1,11 @@
+/**************************************************************************************************************************************
+Fyrryx UDP Protocol
+
+Data is encoded into JSON format before sending/recieving, except for pings ("ping" is answered by "pong").
+JSON will look something like this: {"key1":"value1","key2":"value2"}.
+To encode/decode in python, "json" is used
+To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJson.h)
+ ***************************************************************************************************************************************/
 #include <headers/receiver.h>
 
 void Receiver::handleUDPPacket() {
@@ -15,7 +23,7 @@ if (packetSize) {
 
     // Send a "pong" if pinged
     udp.beginPacket(udp.remoteIP(), udp.remotePort());
-    udp.write("Pong!");
+    udp.write("pong");
     udp.endPacket();
     }
 }

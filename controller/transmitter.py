@@ -1,8 +1,10 @@
 """*********************************************
 Fyrryx UDP Protocol
 
-This transmitter will send UDP packets in the form of JSON. Data can be encoded and decoded in a very flexible manner.
-This transmitter will also recieve UDP packets in the form of JSON. This will recieve the name, age and magnetic field.
+Data is encoded into JSON format before sending/recieving, except for pings ("ping" is answered by "pong").
+JSON will look something like this: {"key1":"value1","key2":"value2"}.
+To encode/decode in python, "json" is used
+To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJson.h)
 *********************************************"""
 import socket
 import json
@@ -46,7 +48,7 @@ class Transmitter:
             server_address = (ip_address, self.port)
             self.sock.sendto("ping".encode(), server_address)
             data, addr = self.sock.recvfrom(1024)
-            if data.decode() == "Pong!":
+            if data.decode() == "pong":
                 return True
         except:
             return False
