@@ -39,16 +39,52 @@ git push origin BRANCH_NAME
 
 There are two parts to this- the server and the client. How does this work? We use a protocol called UDP instead of sending HTTP requests. This ensures the fastest connection between the server and the client. 
 
-Dependencies:
+### Dependencies
+
 - pygame (for handling controller)
+- ArduinoJson.h
 
 To resolve, run this command in the terminal. If you don't have pip installed there are guides for installing pip (the python module installer).
 ```
 pip install pygame
 ```
+### Controller
+
+Controller code is developed in Python with OOP techniques. Data is sent over via the Fyrryx UDP Protocol. For convenience, your workspace should be Fyrryx/controller/
+
+### Server
+
+Server code is developed in CPP with OOP techniques. Data is sent over via the Fyrryx UDP Protocol. Your workspace must be Fyrryx/server/ or it will NOT compile. Place all .cpp files in /src and all function definition in /src/headers. To develop code for a feature
+
+1. Create a new .cpp file in /src/ with a meaningful name (e.g. name.cpp)
+2. Create a .h file in /src/headers/ with the same name (e.g. name.h)
+3. Add these lines of code
+```
+// name.h
+
+#ifndef _RECEIVER_h
+#define _RECEIVER_h
+#include <Arduino.h>
+
+// Any other includes, and your function definitions
+
+#endif
+```
+```
+// name.cpp
+
+#include <headers/name.h>
+```
+```
+// main.ino
+
+#include <headers/name.h>
+```
 
 ## Useful links
 
 Google docs: https://docs.google.com/document/d/1JxvHMA5bM8CIvgcVcvtxcrbAdgQVOpjjdfhHl-o1c70/edit?usp=sharing
+
 Microsoft teams: https://teams.microsoft.com/l/channel/19%3a2wmt9rLXf4xx70l7Jkldz84n94MIJ1uw8qI6J1Ydr4A1%40thread.tacv2/General?groupId=c621b226-48c8-44c9-b2c6-fa1edf2d9cd8&tenantId=2b897507-ee8c-4575-830b-4f8267c3d307
+
 Whatsapp web: https://web.whatsapp.com
