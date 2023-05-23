@@ -31,27 +31,27 @@ function ledOff() {xhttp.open(\"GET\", \"/off\"); xhttp.send();}\
 WiFiWebServer server(80);
 WiFiUDP udp;
 
-//Return the web page
+// Return the web page
 void handleRoot()
 {
   server.send(200, F("text/html"), webpage);
 }
 
-//Switch LED on and acknowledge
+// Switch LED on and acknowledge
 void ledON()
 {
   digitalWrite(LED_BUILTIN,1);
   server.send(200, F("text/plain"), F("ON"));
 }
 
-//Switch LED on and acknowledge
+// Switch LED on and acknowledge
 void ledOFF()
 {
   digitalWrite(LED_BUILTIN,0);
   server.send(200, F("text/plain"), F("OFF"));
 }
 
-//Generate a 404 response with details of the failed request
+// Generate a 404 response with details of the failed request
 void handleNotFound()
 {
   String message = F("File Not Found\n\n"); 
@@ -69,61 +69,7 @@ void handleNotFound()
   server.send(404, F("text/plain"), message);
 }
 
-void setup()
-{
-  pinMode(LED_BUILTIN, OUTPUT);
-  digitalWrite(LED_BUILTIN, 0);
-
-  Serial.begin(9600);
-
-  //Wait 10s for the serial connection before proceeding
-  //This ensures you can see messages from startup() on the monitor
-  //Remove this for faster startup when the USB host isn't attached
-  while (!Serial && millis() < 10000);  
-
-  Serial.println(F("\nStarting Web Server"));
-
-  //Check WiFi shield is present
-  if (WiFi.status() == WL_NO_SHIELD)
-  {
-    Serial.println(F("WiFi shield not present"));
-    while (true);
-  }
-
-  //Configure the static IP address if group number is set
-  if (groupNumber)
-    WiFi.config(IPAddress(192,168,0,groupNumber+1));
-
-  // attempt to connect to WiFi network
-  Serial.print(F("Connecting to WPA SSID: "));
-  Serial.println(ssid);
-  while (WiFi.begin(ssid, pass) != WL_CONNECTED)
-  {
-    delay(500);
-    Serial.print('.');
-  }
-
-  //Register the callbacks to respond to HTTP requests
-  server.on(F("/"), handleRoot);
-  server.on(F("/on"), ledON);
-  server.on(F("/off"), ledOFF);
-
-  server.onNotFound(handleNotFound);
-  
-  server.begin();
-  
-  Serial.print(F("HTTP server started @ "));
-  Serial.println(static_cast<IPAddress>(WiFi.localIP()));
-
-  // Establish UDP connection
-  udp.begin(6969);
-}
-
-//Call the server polling function in the main loop
-void loop()
-{
-  server.handleClient();
-
+void handleUDPPacket() {
   // Recieve and process UDP packets
   int packetSize = udp.parsePacket();
   if (packetSize) {
@@ -142,4 +88,61 @@ void loop()
       udp.endPacket();
     }
   }
+}
+
+void setup()
+{
+  pinMode(LED_BUILTIN, OUTPUT);
+  digitalWrite(LED_BUILTIN, 0);
+
+  Serial.begin(9600);
+
+  // Wait 10s for the serial connection before proceeding
+  // This ensures you can see messages from startup() on the monitor
+  // Remove this for faster startup when the USB host isn't attached
+  while (!Serial && millis() < 10000);  
+
+  Serial.println(F("\nStarting Web Server"));
+
+  // Check WiFi shield is present
+  if (WiFi.status() == WL_NO_SHIELD)
+  {
+    Serial.println(F("WiFi shield not present"));
+    while (true);
+  }
+
+  // Configure the static IP address if group number is set
+  if (groupNumber)
+    WiFi.config(IPAddress(192,168,0,groupNumber+1));
+
+  // attempt to connect to WiFi network
+  Serial.print(F("Connecting to WPA SSID: "));
+  Serial.println(ssid);
+  while (WiFi.begin(ssid, pass) != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print('.');
+  }
+
+  // Register the callbacks to respond to HTTP requests
+  server.on(F("/"), handleRoot);
+  server.on(F("/on"), ledON);
+  server.on(F("/off"), ledOFF);
+
+  server.onNotFound(handleNotFound);
+  
+  server.begin();
+  
+  Serial.print(F("HTTP server started @ "));
+  Serial.println(static_cast<IPAddress>(WiFi.localIP()));
+
+  // Establish UDP connection at port 6969
+  udp.begin(6969);
+}
+
+// Call the server polling function in the main loop
+void loop()
+{
+  server.handleClient();
+  handleUDPPacket();
 }
