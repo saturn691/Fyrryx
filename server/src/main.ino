@@ -5,6 +5,8 @@
 #define USE_WIFI101           true
 #include <WiFiWebServer.h>
 #include <WiFiUdp.h>
+#include <headers/ArduinoJson.h>
+#include <headers/receiver.h>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
@@ -28,30 +30,30 @@ function ledOn() {xhttp.open(\"GET\", \"/on\"); xhttp.send();}\
 function ledOff() {xhttp.open(\"GET\", \"/off\"); xhttp.send();}\
 </script></html>";
 
+Receiver receiver;
 WiFiWebServer server(80);
-WiFiUDP udp;
 
-//Return the web page
+// Return the web page
 void handleRoot()
 {
   server.send(200, F("text/html"), webpage);
 }
 
-//Switch LED on and acknowledge
+// Switch LED on and acknowledge
 void ledON()
 {
   digitalWrite(LED_BUILTIN,1);
   server.send(200, F("text/plain"), F("ON"));
 }
 
-//Switch LED on and acknowledge
+// Switch LED on and acknowledge
 void ledOFF()
 {
   digitalWrite(LED_BUILTIN,0);
   server.send(200, F("text/plain"), F("OFF"));
 }
 
-//Generate a 404 response with details of the failed request
+// Generate a 404 response with details of the failed request
 void handleNotFound()
 {
   String message = F("File Not Found\n\n"); 
@@ -76,21 +78,21 @@ void setup()
 
   Serial.begin(9600);
 
-  //Wait 10s for the serial connection before proceeding
-  //This ensures you can see messages from startup() on the monitor
-  //Remove this for faster startup when the USB host isn't attached
+  // Wait 10s for the serial connection before proceeding
+  // This ensures you can see messages from startup() on the monitor
+  // Remove this for faster startup when the USB host isn't attached
   while (!Serial && millis() < 10000);  
 
   Serial.println(F("\nStarting Web Server"));
 
-  //Check WiFi shield is present
+  // Check WiFi shield is present
   if (WiFi.status() == WL_NO_SHIELD)
   {
     Serial.println(F("WiFi shield not present"));
     while (true);
   }
 
-  //Configure the static IP address if group number is set
+  // Configure the static IP address if group number is set
   if (groupNumber)
     WiFi.config(IPAddress(192,168,0,groupNumber+1));
 
@@ -103,7 +105,7 @@ void setup()
     Serial.print('.');
   }
 
-  //Register the callbacks to respond to HTTP requests
+  // Register the callbacks to respond to HTTP requests
   server.on(F("/"), handleRoot);
   server.on(F("/on"), ledON);
   server.on(F("/off"), ledOFF);
@@ -115,31 +117,13 @@ void setup()
   Serial.print(F("HTTP server started @ "));
   Serial.println(static_cast<IPAddress>(WiFi.localIP()));
 
-  // Establish UDP connection
-  udp.begin(6969);
+  // Establish UDP connection at port 6969
+  receiver.udp.begin(6969);
 }
 
-//Call the server polling function in the main loop
+// Call the server polling function in the main loop
 void loop()
 {
   server.handleClient();
-
-  // Recieve and process UDP packets
-  int packetSize = udp.parsePacket();
-  if (packetSize) {
-    char buffer[255];
-    int len = udp.read(buffer, sizeof(buffer));
-    if (len > 0) {
-      buffer[len] = '\0'; // Add null-terminator to create a valid C-string
-      
-      // Process the received data as needed
-      Serial.print("Received data: ");
-      Serial.println(buffer);
-
-      // Send a "pong" if pinged
-      udp.beginPacket(udp.remoteIP(), udp.remotePort());
-      udp.write("Pong!");
-      udp.endPacket();
-    }
-  }
+  receiver.handleUDPPacket();
 }
