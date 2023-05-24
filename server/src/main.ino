@@ -7,6 +7,7 @@
 #include <WiFiUdp.h>
 #include <headers/ArduinoJson.h>
 #include <headers/receiver.h>
+#include <headers/magnetic-field.h>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
@@ -126,5 +127,9 @@ void loop()
 {
   server.handleClient();
   receiver.handleUDPPacket();
+
+  // int magnetic_field = getMagneticField('args');
+  // Serial.println(magnetic_field);
+
   receiver.sendUDPPacket("Hello, world!", 69, 420);
 }
