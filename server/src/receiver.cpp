@@ -62,19 +62,19 @@ void Receiver::decodeJSON(const char* jsonString) {
     int brake = jsonDocument["Brake"];
 
     // Do something with the extracted values
-    Serial.print(F("Movement: "));
-    Serial.println(movement);
-    Serial.print(F("Turning: "));
-    Serial.println(turning);
-    Serial.print(F("Gas: "));
-    Serial.println(gas);
-    Serial.print(F("Reverse: "));
-    Serial.println(reverse);
-    Serial.print(F("Boost: "));
-    Serial.println(boost);
-    Serial.print(F("Brake: "));
-    Serial.println(brake);
-    Serial.println();
+    // Serial.print(F("Movement: "));
+    // Serial.println(movement);
+    // Serial.print(F("Turning: "));
+    // Serial.println(turning);
+    // Serial.print(F("Gas: "));
+    // Serial.println(gas);
+    // Serial.print(F("Reverse: "));
+    // Serial.println(reverse);
+    // Serial.print(F("Boost: "));
+    // Serial.println(boost);
+    // Serial.print(F("Brake: "));
+    // Serial.println(brake);
+    // Serial.println();
 }
 
 void Receiver::sendUDPPacket(std::string name, int age, int magnetic_field) {
