@@ -11,5 +11,5 @@ transmitter = Transmitter(TARGET_IP, TARGET_PORT)
 while True:
     axis_inputs = controller.get_axis_inputs()
     button_inputs = controller.get_button_inputs()
-    transmitter.handleInputs(axis_inputs, button_inputs)
+    transmitter.sendData(axis_inputs, button_inputs)
     transmitter.receiveData()

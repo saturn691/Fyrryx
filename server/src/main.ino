@@ -126,4 +126,5 @@ void loop()
 {
   server.handleClient();
   receiver.handleUDPPacket();
+  receiver.sendUDPPacket("Hello, world!", 69, 420);
 }
