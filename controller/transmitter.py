@@ -89,8 +89,6 @@ class Transmitter:
             pass
         
         if received_data:
-            for key, value in received_data.items():
-                if value is not None:
-                    print(key, ":", value)
+            return received_data
         else:
             pass
