@@ -1,4 +1,5 @@
 import pygame
+from time import sleep
 
 class XboxController:
     def __init__(self):
@@ -6,12 +7,13 @@ class XboxController:
         pygame.init()
         pygame.joystick.init()
 
-        # Initialize the Xbox controller
+        # Initialize the Xbox controller- keep trying until successs
         self.controller = pygame.joystick.Joystick(0)
         self.controller.init()
 
         # Initialize the D-pad state
         self.dpad_state = (0, 0)
+      
 
     def get_axis_inputs(self):
         # Get the current state of the controller

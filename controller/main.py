@@ -11,10 +11,15 @@ controller = XboxController()
 window = Window()
 
 while True:
-    # axis_inputs = controller.get_axis_inputs()
-    # button_inputs = controller.get_button_inputs()
+    axis_inputs = controller.get_axis_inputs()
+    button_inputs = controller.get_button_inputs()
     # transmitter.sendData(axis_inputs, button_inputs)
+   
     # received_data = transmitter.receiveData()
     received_data = {"Name" : "name", "Age": 0, "MagneticField": "up"}
+    if button_inputs["LB"] and button_inputs["RB"]:
+        print(received_data)
+
     window.update_info(received_data)
     window.run()
+    print("Run")
