@@ -131,5 +131,5 @@ void loop()
   // int magnetic_field = getMagneticField('args');
   // Serial.println(magnetic_field);
 
-  receiver.sendUDPPacket("Hello, world!", 69, 420);
+  receiver.sendUDPPacket("Hello, world!", 69, 0);
 }

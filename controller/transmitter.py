@@ -8,6 +8,7 @@ To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJso
 *********************************************"""
 import socket
 import json
+import time
 
 class Transmitter:
     def __init__(self, TARGET_IP, TARGET_PORT):
@@ -19,9 +20,11 @@ class Transmitter:
         self.sock.settimeout(0.25)  # Set a timeout value to limit the scan duration
 
         self.ip_address = self.findUDPAddress()
+        self.ping = 0
 
     # Blocking function that will continiously search for the server
     def findUDPAddress(self):
+        print("Connecting to server...")
         ip_address = None
         while ip_address == None:
             ip_address = self.fetchUDPAddress()
@@ -45,11 +48,19 @@ class Transmitter:
     # Returns True if we can connect to the IP address at port using socket
     def checkAddress(self, ip_address):
         try:
+            start_time = time.time()
+
             server_address = (ip_address, self.port)
             self.sock.sendto("ping".encode(), server_address)
             data, addr = self.sock.recvfrom(1024)
-            if data.decode() == "pong":
-                return True
+
+            end_time = time.time()
+            
+            ping = (end_time - start_time) * 1000
+            self.ping = ping
+            
+            return True
+        
         except:
             return False
 
