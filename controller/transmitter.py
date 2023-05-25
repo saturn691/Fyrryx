@@ -54,7 +54,7 @@ class Transmitter:
             return False
 
     # Sends data to the server to be processed and handles resetting
-    def handleInputs(self, axis_inputs, button_inputs):
+    def sendData(self, axis_inputs, button_inputs):
         if button_inputs["Back"] and button_inputs["Start"]:
             # Reset the connection
             print("Connection reset")
@@ -89,8 +89,6 @@ class Transmitter:
             pass
         
         if received_data:
-            for key, value in received_data.items():
-                if value is not None:
-                    print(key, ":", value)
+            return received_data
         else:
             pass
