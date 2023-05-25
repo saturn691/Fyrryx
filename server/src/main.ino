@@ -34,6 +34,8 @@ function ledOff() {xhttp.open(\"GET\", \"/off\"); xhttp.send();}\
 Receiver receiver;
 WiFiWebServer server(80);
 
+#define magneticFieldPin A0
+
 // Return the web page
 void handleRoot()
 {
@@ -128,8 +130,8 @@ void loop()
   server.handleClient();
   receiver.handleUDPPacket();
 
-  // int magnetic_field = getMagneticField('args');
-  // Serial.println(magnetic_field);
+  int magnetic_field = getMagneticField(magneticFieldPin);
+  Serial.println(magnetic_field);
 
   receiver.sendUDPPacket("Hello, world!", 69, 420);
 }

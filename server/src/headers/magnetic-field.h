@@ -4,6 +4,6 @@
 #include <Arduino.h>
 // Place any other includes here
 
-int getMagneticField(char args);
+int getMagneticField(int magneticFieldPin);
 
 #endif
