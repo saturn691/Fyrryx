@@ -11,47 +11,40 @@ import json
 import time
 
 class Transmitter:
-    def __init__(self, TARGET_IP, TARGET_PORT):
-        self.TARGET_IP = TARGET_IP
-        self.port = TARGET_PORT
-
+    def __init__(self):
         # Create a UDP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(0.25)  # Set a timeout value to limit the scan duration
+        self.sock.settimeout(1)  # Set a timeout value to limit the scan duration
+        
+        self.port = 6969
+        self.ping = 0
 
         self.ip_address = self.findUDPAddress()
-        self.ping = 0
 
     # Blocking function that will continiously search for the server
     def findUDPAddress(self):
-        print("Connecting to server...")
-        ip_address = None
-        while ip_address == None:
-            ip_address = self.fetchUDPAddress()
+        target_ip_address = input("Enter server address (192.168.0.XX): ")
+        if target_ip_address.isnumeric():
+            target_ip_address = f"192.168.0.{target_ip_address}"
+        
+        for i in range(10):
+            if self.checkAddress((target_ip_address, self.port)):
+                break
+        else:
+            print("Couldn't connect to server. Please try again.\n")
+            return self.findUDPAddress()
 
-        print("Connection established at IP: " + ip_address)
+        print("Connection established at IP: " + target_ip_address)
 
-        return ip_address
-
-    # Searches target IP, then searches IP from 1 to 255
-    def fetchUDPAddress(self):
-        if self.checkAddress(self.TARGET_IP) == True:
-            return self.TARGET_IP
-        else:    
-            for i in range(1, 255):
-                ip_address = f"192.168.0.{i}"  # Customize the IP address range based on your network configuration
-                if self.checkAddress(ip_address) == True:
-                    return ip_address
-
-        print(f"Nothing found at port {self.port} from IP = 192.168.0.XX . Please try again.")
+        return target_ip_address
 
     # Returns True if we can connect to the IP address at port using socket
-    def checkAddress(self, ip_address):
+    def checkAddress(self, server_address):
         try:
             start_time = time.time()
 
-            server_address = (ip_address, self.port)
             self.sock.sendto("ping".encode(), server_address)
+            print("Sent ping to server: " + server_address[0])
             data, addr = self.sock.recvfrom(1024)
 
             end_time = time.time()
@@ -63,6 +56,7 @@ class Transmitter:
         
         except:
             return False
+        
 
     # Sends data to the server to be processed and handles resetting
     def sendData(self, axis_inputs, button_inputs):
@@ -83,7 +77,16 @@ class Transmitter:
         json_data = json.dumps(data)    
         
         server_address = (self.ip_address, self.port)
+        start_time = time.time()
         self.sock.sendto(json_data.encode(), server_address)
+        try:
+            data, addr = self.sock.recvfrom(1024)
+        except:
+            self.ping = 9999
+            return
+        end_time = time.time()
+        ping = (end_time - start_time) * 1000
+        self.ping = ping
 
     def receiveData(self):
         try:

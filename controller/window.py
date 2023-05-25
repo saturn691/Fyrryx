@@ -31,12 +31,18 @@ class Window:
         self.ping = 0
 
     def update_info(self, received_data, ping):
+        if received_data == None:
+            return
+        
         self.name = received_data["Name"]
         self.age = received_data["Age"]
         self.magnetic_field = received_data["MagneticField"]
         magnetic_field_key = {-1 : "Down", 0 : "None", 1 : "Up"}
         self.magnetic_field = magnetic_field_key[self.magnetic_field]
         self.ping = ping
+    
+    def get_info(self):
+        return {"Name": self.name, "Age": self.age, "MagneticField": self.magnetic_field}
 
     # Returns True if pygame.QUIT
     def update_display(self):
@@ -99,7 +105,7 @@ class Window:
         # Render ping text with reduced font size
         ping_font_size = 16
         ping_font = pygame.freetype.Font(self.font_path, ping_font_size)
-        ping_text = "Ping: {}".format(self.ping)
+        ping_text = "Ping: {}".format(int(self.ping))
         ping_text_width, ping_text_height = ping_font.get_rect(ping_text).size
         ping_text_x = ping_box_x + ping_box_width // 2 - ping_text_width // 2
         ping_text_y = ping_box_y + ping_box_height // 2 - ping_text_height // 2

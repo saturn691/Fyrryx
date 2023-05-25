@@ -82,7 +82,6 @@ void setup()
   // Wait 10s for the serial connection before proceeding
   // This ensures you can see messages from startup() on the monitor
   // Remove this for faster startup when the USB host isn't attached
-  while (!Serial && millis() < 10000);  
 
   Serial.println(F("\nStarting Web Server"));
 

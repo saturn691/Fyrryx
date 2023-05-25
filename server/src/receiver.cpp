@@ -13,6 +13,7 @@ const int BUFFER_SIZE = 255;
 void Receiver::handleUDPPacket() {
     // Recieve and process UDP packets
     int packetSize = udp.parsePacket();
+    Serial.println(packetSize);
     if (packetSize) {
         char buffer[BUFFER_SIZE]; 
         int len = udp.read(buffer, sizeof(buffer));
@@ -32,6 +33,7 @@ void Receiver::handleUDPPacket() {
             udp.beginPacket(udp.remoteIP(), udp.remotePort());
             udp.write("pong");
             udp.endPacket();
+            
         }
     }
 }

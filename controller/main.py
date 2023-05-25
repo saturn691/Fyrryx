@@ -2,12 +2,8 @@ from xbox_controller import XboxController
 from transmitter import Transmitter
 from window import Window
 
-# Define the target port and IP
-TARGET_PORT = 6969
-TARGET_IP = "192.169.0.8"
-
 controller = XboxController()
-transmitter = Transmitter(TARGET_IP, TARGET_PORT)
+transmitter = Transmitter()
 window = Window()
 
 while True:
@@ -18,12 +14,10 @@ while True:
     received_data = transmitter.receiveData()
 
     # received_data = {"Name" : "name", "Age": 0, "MagneticField": "up"}
+
     if button_inputs["LB"] and button_inputs["RB"]:
-        print(received_data)
+        print(window.get_info())
 
-    if received_data != None:
-        current_data = received_data 
-
-    window.update_info(current_data, transmitter.ping)
+    window.update_info(received_data, transmitter.ping)
     if window.update_display():
         break   
