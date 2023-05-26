@@ -20,6 +20,7 @@ class Transmitter:
         self.ping = 0
 
         self.ip_address = self.findUDPAddress()
+        self.screenshot_button_held = False
 
     # Blocking function that will continiously search for the server
     def findUDPAddress(self):
@@ -106,3 +107,12 @@ class Transmitter:
             return received_data
         else:
             pass
+    
+    def screenshotDataOnRequest(self, button_inputs, data):
+        if button_inputs["LB"] and button_inputs["RB"] and not self.screenshot_button_held:
+            self.screenshot_button_held = True
+            print(data)
+        elif button_inputs["LB"] and button_inputs["RB"]:
+            self.screenshot_button_held = True
+        else:
+            self.screenshot_button_held = False

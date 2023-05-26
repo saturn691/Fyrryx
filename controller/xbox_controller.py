@@ -12,8 +12,7 @@ class XboxController:
         self.controller.init()
 
         # Initialize the D-pad state
-        self.dpad_state = (0, 0)
-      
+        self.dpad_state = (0, 0)      
 
     def get_axis_inputs(self):
         # Get the current state of the controller
@@ -100,5 +99,5 @@ class XboxController:
         elif self.dpad_state == (-1, -1):
             button_inputs["D-pad Down"] = 1
             button_inputs["D-pad Left"] = 1
-
+        
         return button_inputs

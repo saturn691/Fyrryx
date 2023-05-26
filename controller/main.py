@@ -12,11 +12,9 @@ while True:
 
     transmitter.sendData(axis_inputs, button_inputs)
     received_data = transmitter.receiveData()
-
     # received_data = {"Name" : "name", "Age": 0, "MagneticField": "up"}
 
-    if button_inputs["LB"] and button_inputs["RB"]:
-        print(window.get_info())
+    transmitter.screenshotDataOnRequest(button_inputs, window.get_info())
 
     window.update_info(received_data, transmitter.ping)
     if window.update_display():
