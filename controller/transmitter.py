@@ -18,6 +18,8 @@ class Transmitter:
         
         self.port = 6969
         self.ping = 0
+        self.packet_interval = 0.1 # Interval between packets in seconds
+        self.send_time = 0
 
         self.ip_address = self.findUDPAddress()
         self.screenshot_button_held = False
@@ -61,13 +63,18 @@ class Transmitter:
 
     # Sends data to the server to be processed and handles resetting
     def sendData(self, axis_inputs, button_inputs):
+        if self.send_time + self.packet_interval > time.time():
+            return
+        self.send_time = time.time()
+        
         if button_inputs["Back"] and button_inputs["Start"]:
             # Reset the connection
             print("Connection reset")
             self.ip_address = self.findUDPAddress()
 
         data = {
-            "Movement" : axis_inputs["Left Stick X"],
+            "Movement X" : axis_inputs["Left Stick X"],
+            "Movement Y" : axis_inputs["Left Stick Y"],
             "Turning" : axis_inputs["Right Stick X"],
             "Gas" : axis_inputs["Right Trigger"],
             "Reverse" : axis_inputs["Left Trigger"],
@@ -75,8 +82,9 @@ class Transmitter:
             "Brake" : button_inputs["B"]
         }    
 
-        json_data = json.dumps(data)    
-        
+        json_data = json.dumps(data)  
+        print(json_data)
+
         server_address = (self.ip_address, self.port)
         start_time = time.time()
         self.sock.sendto(json_data.encode(), server_address)

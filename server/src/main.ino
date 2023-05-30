@@ -3,11 +3,18 @@
  ***************************************************************************************************************************************/
 #define USE_WIFI_NINA         false
 #define USE_WIFI101           true
+
+#define BACK_RIGHT_MOTOR 3 // This is the pins that we use
+#define FRONT_RIGHT_MOTOR 5
+#define FRONT_LEFT_MOTOR 6
+#define BACK_LEFT_MOTOR 9
+
 #include <WiFiWebServer.h>
 #include <WiFiUdp.h>
 #include <headers/ArduinoJson.h>
 #include <headers/receiver.h>
 #include <headers/magnetic-field.h>
+#include <headers/RCMovementHandler.h>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
@@ -33,6 +40,7 @@ function ledOff() {xhttp.open(\"GET\", \"/off\"); xhttp.send();}\
 
 Receiver receiver;
 WiFiWebServer server(80);
+RCMovementHandler movementHandler(BACK_RIGHT_MOTOR, FRONT_RIGHT_MOTOR, FRONT_LEFT_MOTOR, BACK_LEFT_MOTOR);
 
 // Return the web page
 void handleRoot()
@@ -75,6 +83,11 @@ void handleNotFound()
 void setup()
 {
   pinMode(LED_BUILTIN, OUTPUT);
+  // pinMode(BACK_RIGHT_MOTOR, OUTPUT);
+  // pinMode(FRONT_RIGHT_MOTOR, OUTPUT);
+  // pinMode(FRONT_LEFT_MOTOR, OUTPUT);
+  // pinMode(BACK_LEFT_MOTOR, OUTPUT);
+
   digitalWrite(LED_BUILTIN, 0);
 
   Serial.begin(9600);
@@ -82,7 +95,7 @@ void setup()
   // Wait 10s for the serial connection before proceeding
   // This ensures you can see messages from startup() on the monitor
   // Remove this for faster startup when the USB host isn't attached
-
+  while (!Serial && millis() < 10000);
   Serial.println(F("\nStarting Web Server"));
 
   // Check WiFi shield is present
@@ -125,10 +138,15 @@ void setup()
 void loop()
 {
   server.handleClient();
-  receiver.handleUDPPacket();
+  std::unordered_map<std::string, double> packetData = receiver.handleUDPPacket();
+  std::unordered_map<std::string, double> data;
+  if (packetData.size()) {
+    data = packetData;
+    Serial.println(data["Movement X"]);
+  }
 
   // int magnetic_field = getMagneticField('args');
   // Serial.println(magnetic_field);
-
+  movementHandler.move(data);
   receiver.sendUDPPacket("Hello, world!", 69, 0);
 }
