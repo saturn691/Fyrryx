@@ -11,10 +11,10 @@ while True:
     button_inputs = controller.get_button_inputs()
     transmitter.sendData(axis_inputs, button_inputs)
     received_data = transmitter.receiveData()
-    # received_data = {"Name" : "name", "Age": 0, "MagneticField": "up"}
+    received_data = {"Name" : "name", "Age": 0, "MagneticField": 0}
 
     transmitter.screenshotDataOnRequest(button_inputs, window.get_info())
 
-    window.update_info(received_data, transmitter.ping)
+    window.update_info(received_data, 69)
     if window.update_display():
-        break       
+        break

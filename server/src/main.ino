@@ -16,8 +16,8 @@
 #include <headers/magnetic-field.h>
 #include <headers/RCMovementHandler.h>
 
-const char ssid[] = "EEERover";
-const char pass[] = "exhibition";
+const char ssid[] = "planetsaturn.dev";
+const char pass[] = "n8tnadea";
 const int groupNumber = 7; // Set your group number to make the IP address constant - only do this on the EEERover network
 
 //Webpage to return when root is requested
@@ -39,8 +39,9 @@ function ledOff() {xhttp.open(\"GET\", \"/off\"); xhttp.send();}\
 </script></html>";
 
 Receiver receiver;
-WiFiWebServer server(80);
+WiFiWebServer server(6969);
 RCMovementHandler movementHandler(BACK_RIGHT_MOTOR, FRONT_RIGHT_MOTOR, FRONT_LEFT_MOTOR, BACK_LEFT_MOTOR);
+std::unordered_map<std::string, double> data;
 
 // Return the web page
 void handleRoot()
@@ -80,24 +81,8 @@ void handleNotFound()
   server.send(404, F("text/plain"), message);
 }
 
-void setup()
-{
-  pinMode(LED_BUILTIN, OUTPUT);
-  // pinMode(BACK_RIGHT_MOTOR, OUTPUT);
-  // pinMode(FRONT_RIGHT_MOTOR, OUTPUT);
-  // pinMode(FRONT_LEFT_MOTOR, OUTPUT);
-  // pinMode(BACK_LEFT_MOTOR, OUTPUT);
-
-  digitalWrite(LED_BUILTIN, 0);
-
-  Serial.begin(9600);
-
-  // Wait 10s for the serial connection before proceeding
-  // This ensures you can see messages from startup() on the monitor
-  // Remove this for faster startup when the USB host isn't attached
-  while (!Serial && millis() < 10000);
+void connectToWiFi() {
   Serial.println(F("\nStarting Web Server"));
-
   // Check WiFi shield is present
   if (WiFi.status() == WL_NO_SHIELD)
   {
@@ -134,19 +119,48 @@ void setup()
   receiver.udp.begin(6969);
 }
 
+void setup()
+{
+  pinMode(LED_BUILTIN, OUTPUT);
+  pinMode(BACK_RIGHT_MOTOR, OUTPUT);
+  pinMode(FRONT_RIGHT_MOTOR, OUTPUT);
+  pinMode(FRONT_LEFT_MOTOR, OUTPUT);
+  pinMode(BACK_LEFT_MOTOR, OUTPUT);
+
+  digitalWrite(LED_BUILTIN, 0);
+
+  Serial.begin(9600);
+
+  // Wait 10s for the serial connection before proceeding
+  // This ensures you can see messages from startup() on the monitor
+  // Remove this for faster startup when the USB host isn't attached
+  while (!Serial && millis() < 10000);
+  connectToWiFi();
+}
+
 // Call the server polling function in the main loop
 void loop()
 {
   server.handleClient();
+  
   std::unordered_map<std::string, double> packetData = receiver.handleUDPPacket();
-  std::unordered_map<std::string, double> data;
   if (packetData.size()) {
     data = packetData;
-    Serial.println(data["Movement X"]);
   }
 
+  delay(50);
   // int magnetic_field = getMagneticField('args');
   // Serial.println(magnetic_field);
-  movementHandler.move(data);
-  receiver.sendUDPPacket("Hello, world!", 69, 0);
+  movementHandler.move(packetData);
+  // receiver.sendUDPPacket("Hello, world!", 69, 0);
+
+  if (WiFi.status() != WL_CONNECTED) {
+    connectToWiFi();
+  }
+
+  Serial.println("Looping...");
+  analogWrite(BACK_RIGHT_MOTOR, 0);
+  analogWrite(FRONT_RIGHT_MOTOR, 0);
+  analogWrite(FRONT_LEFT_MOTOR, 0);
+  analogWrite(FRONT_LEFT_MOTOR, 0);
 }

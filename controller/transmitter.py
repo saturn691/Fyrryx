@@ -9,20 +9,43 @@ To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJso
 import socket
 import json
 import time
+import subprocess
 
 class Transmitter:
     def __init__(self):
         # Create a UDP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(1)  # Set a timeout value to limit the scan duration
+        self.sock.settimeout(0.1)  # Set a timeout value to limit the scan duration
         
         self.port = 6969
         self.ping = 0
         self.packet_interval = 0.1 # Interval between packets in seconds
         self.send_time = 0
 
+        # Shows what network we are connected to
+        ssid = self.get_ssid()
+        if ssid:
+            print("Connected to Wi-Fi network:", ssid)
+        else:
+            print("Not connected to any Wi-Fi network.")
+        
+        # Gets the UDP address (asks user for IP)
         self.ip_address = self.findUDPAddress()
+
         self.screenshot_button_held = False
+
+    # Returns the ssid of the network if connected
+    def get_ssid(self):
+        try:
+            output = subprocess.check_output(["netsh", "wlan", "show", "interfaces"], universal_newlines=True)
+            lines = output.splitlines()
+            for line in lines:
+                if "SSID" in line:
+                    ssid = line.split(":")[1].strip()
+                    return ssid
+        except subprocess.CalledProcessError:
+            pass
+        return None
 
     # Blocking function that will continiously search for the server
     def findUDPAddress(self):

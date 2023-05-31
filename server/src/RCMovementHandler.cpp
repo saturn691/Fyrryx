@@ -48,25 +48,33 @@ void RCMovementHandler::rotateRight(int power) {
 }
 
 void RCMovementHandler::move(std::unordered_map<std::string, double> data) {
-    if (!data.empty()) return;
- 
+    if (data.empty()) return;
+    Serial.println(data.size());
+    Serial.println(data["Movement X"]);    
 
     int power = triggerPressureToPower(data["Gas"]);
+    Serial.println(power);
     if (data["Movement X"] > 0.5) {
-        // Serial.print("Movement X: "); Serial.print(data["Movement X"]);
+        Serial.print("Movement X: "); Serial.print(data["Movement X"]);
         moveRight(power);
     }
     else if (data["Movement X"] < -0.5) {
-        // Serial.print("Movement X: "); Serial.print(data["Movement X"]);
+        Serial.print("Movement X: "); Serial.print(data["Movement X"]);
         moveLeft(power);
     }
     else if (data["Movement Y"] < -0.5) {
-        // Serial.print("Movement Y: "); Serial.print(data["Movement Y"]);
+        Serial.print("Movement Y: "); Serial.print(data["Movement Y"]);
         moveBackward(power);
     }
     else if (data["Movement Y"] > 0.5) {
-        // Serial.print("Movement Y: "); Serial.print(data["Movement Y"]);
+        Serial.print("Movement Y: "); Serial.print(data["Movement Y"]);
         moveForward(power);
+    }
+    else {
+        analogWrite(back_right_pin, 0);
+        analogWrite(front_right_pin, 0);
+        analogWrite(front_left_pin, 0);
+        analogWrite(back_left_pin, 0);
     }
 
 }
