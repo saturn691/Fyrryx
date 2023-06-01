@@ -24,6 +24,7 @@ std::unordered_map<std::string, double> Receiver::handleUDPPacket() {
             // Process the received data as needed
             if (buffer[0] == '{') {
                 data = decodeJSON(buffer);
+                // Serial.println(buffer);
             }
             else {
                 Serial.print("Received data: ");

@@ -20,7 +20,7 @@ public:
     void moveRight(int power);
     void rotateLeft(int power);
     void rotateRight(int power);
-    void move(std::unordered_map<std::string, double> data);
+    void move(double x, double y, double gas);
 };
 
 #endif
