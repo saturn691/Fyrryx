@@ -83,18 +83,8 @@ class Transmitter:
         except:
             return False
         
-
-    # Sends data to the server to be processed and handles resetting
-    def sendData(self, axis_inputs, button_inputs):
-        if self.send_time + self.packet_interval > time.time():
-            return
-        self.send_time = time.time()
-        
-        if button_inputs["Back"] and button_inputs["Start"]:
-            # Reset the connection
-            print("Connection reset")
-            self.ip_address = self.findUDPAddress()
-
+    # Encodes data from a controller
+    def encodeControllerData(self, axis_inputs, button_inputs):
         data = {
             "Movement X" : axis_inputs["Left Stick X"],
             "Movement Y" : axis_inputs["Left Stick Y"],
@@ -103,7 +93,49 @@ class Transmitter:
             "Reverse" : axis_inputs["Left Trigger"],
             "Boost" : button_inputs["A"],
             "Brake" : button_inputs["B"]
-        }    
+        }  
+        
+        return data
+    
+    # Encodes keyboard data
+    def encodeKeyboardData(self, keyboardData):
+        data = {}
+
+        if keyboardData["pygame.K_a"]:
+            data["Movement X"] = -1
+        elif keyboardData["pygame.K_d"]:
+            data["Movement X"] = 1
+        else:
+            data["Movement X"] = 0
+
+        if keyboardData["pygame.K_w"]:
+            data["Movement Y"] = -1
+        elif keyboardData["pygame.K_s"]:
+            data["Movement Y"] = 1
+        else:
+            data["Movement Y"] = 0
+        
+        if data["pygame.K_LEFT"]:
+            data["Steering"] = -1
+        elif data["pygame.K_RIGHT"]:
+            data["Steering"] = 1
+        
+        if keyboardData["pygame.K_a"] or keyboardData["pygame.K_d"] or keyboardData["pygame.K_w"] or keyboardData["pygame.K_s"] or keyboardData["pygame.K_LEFT"] or keyboardData["pygame.K_RIGHT"]:
+            data["Gas"] = 1
+        else:
+            data["Gas"] = 0
+        
+        data["Reverse"] = 0
+        data["Boost"] = 0
+        data["Brake"] = 0
+
+        return data
+
+    # Sends data to the server to be processed and handles resetting
+    def sendData(self, data):
+        if self.send_time + self.packet_interval > time.time():
+            return
+        self.send_time = time.time()
 
         json_data = json.dumps(data)  
         print(json_data)
@@ -139,11 +171,33 @@ class Transmitter:
         else:
             pass
     
-    def screenshotDataOnRequest(self, button_inputs, data):
-        if button_inputs["LB"] and button_inputs["RB"] and not self.screenshot_button_held:
+    def handleRequestedInputs(self, controller_type, button_inputs, keyboard_inputs, data):
+        if controller_type == "Controller":
+            if button_inputs["Back"] and button_inputs["Start"]:
+                self.resetConnectionOnRequest()
+            
+            if button_inputs["LB"] and button_inputs["RB"]:
+                self.screenshotDataOnRequest(data)
+            else:
+                self.screenshot_button_held = False
+        
+        elif controller_type == "Keyboard":
+            if keyboard_inputs["pygame.K_r"]:
+                self.resetConnectionOnRequest()
+            
+            if button_inputs["pygame.K_PRINTSCREEN"]:
+                self.screenshotDataOnRequest(data)
+            else:
+                self.screenshot_button_held = False
+    
+    def resetConnectionOnRequest(self):
+        # Reset the connection
+        print("Connection reset")
+        self.ip_address = self.findUDPAddress()
+
+    def screenshotDataOnRequest(self, data):
+        if not self.screenshot_button_held:
             self.screenshot_button_held = True
             print(data)
-        elif button_inputs["LB"] and button_inputs["RB"]:
-            self.screenshot_button_held = True
         else:
-            self.screenshot_button_held = False
+            return

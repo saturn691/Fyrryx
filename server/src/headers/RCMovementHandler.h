@@ -20,7 +20,7 @@ public:
     void moveRight(int power);
     void rotateLeft(int power);
     void rotateRight(int power);
-    void move(double x, double y, double gas);
+    void move(double x, double y, double turning, double gas);
 };
 
 #endif
