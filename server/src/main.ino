@@ -7,7 +7,7 @@
 #define BACK_RIGHT_MOTOR 3 // This is the pins that we use
 #define FRONT_RIGHT_MOTOR 4
 #define FRONT_LEFT_MOTOR 6
-#define BACK_LEFT_MOTOR 9
+#define BACK_LEFT_MOTOR 13
 #define MOTOR_ENABLE_PIN 2 
 
 #include <WiFiWebServer.h>
@@ -69,10 +69,14 @@ void setup()
 
   Serial.begin(9600);
 
-  while (!Serial && millis() < 10000);
+  // while (!Serial && millis() < 10000);
   connectToWiFi();
 
   digitalWrite(MOTOR_ENABLE_PIN, 1);
+  analogWrite(BACK_RIGHT_MOTOR, 128);
+  analogWrite(FRONT_RIGHT_MOTOR, 128);
+  analogWrite(FRONT_LEFT_MOTOR, 128);
+  analogWrite(BACK_LEFT_MOTOR, 128);
 }
 
 // Call the server polling function in the main loop
@@ -87,10 +91,10 @@ void loop()
   if (!packetData.empty()) {
     double x = packetData["Movement X"];
     double y = packetData["Movement Y"];
+    double turning = packetData["Turning"];
     double gas = packetData["Gas"];
 
-    movementHandler.move(x, y, gas);
+    movementHandler.move(x, y, turning, gas);
   }
 
-  // Serial.println("Looping...");
 }
