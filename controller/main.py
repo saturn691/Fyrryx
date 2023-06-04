@@ -1,4 +1,4 @@
-from controller import Controller
+from controls import Controller
 from transmitter import Transmitter
 from window import Window
 

@@ -23,7 +23,7 @@ class Transmitter:
         self.send_time = 0
 
         # Shows what network we are connected to
-        ssid = self.get_ssid()
+        ssid = self.__get_ssid()
         if ssid:
             print("Connected to Wi-Fi network:", ssid)
         else:
@@ -35,7 +35,7 @@ class Transmitter:
         self.screenshot_button_held = False
 
     # Returns the ssid of the network if connected
-    def get_ssid(self):
+    def __get_ssid(self):
         try:
             output = subprocess.check_output(["netsh", "wlan", "show", "interfaces"], universal_newlines=True)
             lines = output.splitlines()
@@ -48,24 +48,24 @@ class Transmitter:
         return None
 
     # Blocking function that will continiously search for the server
-    def findUDPAddress(self):
+    def __findUDPAddress(self):
         target_ip_address = input("Enter server address (192.168.0.XX): ")
         if target_ip_address.isnumeric():
             target_ip_address = f"192.168.0.{target_ip_address}"
         
         for i in range(10):
-            if self.checkAddress((target_ip_address, self.port)):
+            if self.__checkAddress((target_ip_address, self.port)):
                 break
         else:
             print("Couldn't connect to server. Please try again.\n")
-            return self.findUDPAddress()
+            return self.__findUDPAddress()
 
         print("Connection established at IP: " + target_ip_address)
 
         return target_ip_address
 
     # Returns True if we can connect to the IP address at port using socket
-    def checkAddress(self, server_address):
+    def __checkAddress(self, server_address):
         try:
             start_time = time.time()
 
@@ -152,6 +152,7 @@ class Transmitter:
         ping = (end_time - start_time) * 1000
         self.ping = ping
 
+    # Receives data from server and returns it
     def receiveData(self):
         try:
             data, addr = self.sock.recvfrom(1024)
@@ -171,31 +172,32 @@ class Transmitter:
         else:
             pass
     
+    # Handles any requested inuputs (e.g. screenshot data)
     def handleRequestedInputs(self, controller_type, button_inputs, keyboard_inputs, data):
         if controller_type == "Controller":
             if button_inputs["Back"] and button_inputs["Start"]:
-                self.resetConnectionOnRequest()
+                self.__resetConnectionOnRequest()
             
             if button_inputs["LB"] and button_inputs["RB"]:
-                self.screenshotDataOnRequest(data)
+                self.__screenshotDataOnRequest(data)
             else:
                 self.screenshot_button_held = False
         
         elif controller_type == "Keyboard":
             if keyboard_inputs["pygame.K_r"]:
-                self.resetConnectionOnRequest()
+                self.__resetConnectionOnRequest()
             
             if button_inputs["pygame.K_PRINTSCREEN"]:
-                self.screenshotDataOnRequest(data)
+                self.__screenshotDataOnRequest(data)
             else:
                 self.screenshot_button_held = False
     
-    def resetConnectionOnRequest(self):
+    def __resetConnectionOnRequest(self):
         # Reset the connection
         print("Connection reset")
-        self.ip_address = self.findUDPAddress()
+        self.ip_address = self.__findUDPAddress()
 
-    def screenshotDataOnRequest(self, data):
+    def __screenshotDataOnRequest(self, data):
         if not self.screenshot_button_held:
             self.screenshot_button_held = True
             print(data)
