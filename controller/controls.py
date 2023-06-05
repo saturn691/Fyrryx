@@ -115,12 +115,24 @@ class Controller:
     def get_keyboard_inputs(self):
         keyboard_inputs = []
 
+        button_mapping = {
+            0: "A",
+            1: "B",
+            2: "X",
+            3: "Y",
+            4: "LB",
+            5: "RB",
+            6: "Back",
+            7: "Start",
+            8: "Left Stick",
+            9: "Right Stick"
+        }
+
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                keyboard_inputs.append(event.key)
-                print(event.key)
+                keyboard_inputs.append(event.key)   
 
         return keyboard_inputs

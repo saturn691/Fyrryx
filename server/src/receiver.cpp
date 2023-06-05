@@ -64,10 +64,8 @@ std::unordered_map<std::string, double> Receiver::decodeJSON(const char* jsonStr
     jsonData["Movement X"] = jsonDocument["Movement X"];
     jsonData["Movement Y"] = jsonDocument["Movement Y"];
     jsonData["Turning"] = jsonDocument["Turning"];
-    jsonData["Gas"] = jsonDocument["Gas"];
-    jsonData["Reverse"] = jsonDocument["Reverse"];
-    jsonData["Boost"] = jsonDocument["Boost"];
-    jsonData["Brake"] = jsonDocument["Brake"];
+    jsonData["Horn"] = jsonDocument["Horn"];
+    jsonData["Rickroll"] = jsonDocument["Rickroll"];
 
     // Return the unordered map
     return jsonData;

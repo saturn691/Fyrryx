@@ -1,8 +1,15 @@
 #include <headers/RCMovementHandler.h>
 
-// Converts -1 to 1 to 0 to 128
-int RCMovementHandler::triggerPressureToPower(double pressure) {
-    return (pressure + 1) * 64;
+// Converts 0 to 1 to 0 to 128
+int RCMovementHandler::magnitudeToPower(double x, double y) {
+    int value = std::sqrt(x * x + y * y) * 128;
+    
+    if (value >= 128) {
+        return 128;
+    }
+    else {
+        return value;
+    }
 }
 
 void RCMovementHandler::rotateLeft(int power) {
@@ -47,30 +54,32 @@ void RCMovementHandler::moveBackward(int power) {
     analogWrite(back_left_pin, 128-power);  
 }
 
-void RCMovementHandler::move(double x, double y, double turning, double gas) {
-    int power = triggerPressureToPower(gas);
+void RCMovementHandler::move(double x, double y, double turning) {
+    int power = magnitudeToPower(x, y);
     if (x > 0.5) {
-        Serial.print("Movement X: "); Serial.print(x);
+        Serial.println("Movement X: "); Serial.print(x);
         moveRight(power);
     }
     else if (x < -0.5) {
-        Serial.print("Movement X: "); Serial.print(x);
+        Serial.println("Movement X: "); Serial.print(x);
         moveLeft(power);
     }
     else if (y < -0.5) {
-        Serial.print("Movement Y: "); Serial.print(y);
+        Serial.println("Movement Y: "); Serial.print(y);
         moveForward(power);
     }
     else if (y > 0.5) {
-        Serial.print("Movement Y: "); Serial.print(y);
+        Serial.println("Movement Y: "); Serial.print(y);
         moveBackward(power);
     }
     else if (turning > 0.5) {
-        Serial.print("Turning: "); Serial.print(turning);
+        Serial.println("Turning: "); Serial.print(turning);
+        power = magnitudeToPower(turning, 0);
         rotateRight(power);
     }
     else if (turning < -0.5) {
-        Serial.print("Turning: "); Serial.print(turning);
+        power = magnitudeToPower(turning, 0);
+        Serial.println("Turning: "); Serial.print(turning);
         rotateLeft(power);
     }
     else {

@@ -10,17 +10,18 @@ private:
     int front_right_pin;
     int front_left_pin;
     int back_left_pin;
-public:
-    RCMovementHandler(int br, int fr, int fl, int bl): back_right_pin(br), front_right_pin(fr), front_left_pin(fl), back_left_pin(bl) {};
-    
-    int triggerPressureToPower(double pressure);
+
+    int magnitudeToPower(double x, double y);
     void moveForward(int power);
     void moveBackward(int power);
     void moveLeft(int power);
     void moveRight(int power);
     void rotateLeft(int power);
     void rotateRight(int power);
-    void move(double x, double y, double turning, double gas);
+public:
+    RCMovementHandler(int br, int fr, int fl, int bl): back_right_pin(br), front_right_pin(fr), front_left_pin(fl), back_left_pin(bl) {};
+    
+    void move(double x, double y, double turning);
 };
 
 #endif
