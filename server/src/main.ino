@@ -9,6 +9,7 @@
 #define FRONT_LEFT_MOTOR 6
 #define BACK_LEFT_MOTOR 13
 #define MOTOR_ENABLE_PIN 2 
+#define magneticFieldPin A0
 
 #include <WiFiWebServer.h>
 #include <WiFiUdp.h>

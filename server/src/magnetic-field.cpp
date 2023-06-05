@@ -3,6 +3,8 @@
 #include <headers/magnetic-field.h>
 
 // Return -1 if the magnetic field is down, 0 if none, 1 if up
-int getMagneticField(char args) {
-    // Code goes here
+int getMagneticField(int magneticFieldPin) {
+    float output;
+    output=analogRead(magneticFieldPin);
+    return output;
 }
