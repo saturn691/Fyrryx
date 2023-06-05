@@ -1,4 +1,5 @@
 import pygame
+import sys
 from time import sleep
 
 class Controller:
@@ -18,6 +19,9 @@ class Controller:
             self.type = "Keyboard"
 
     def get_axis_inputs(self):
+        if self.type != "Controller":
+            return None
+        
         # Get the current state of the controller
         pygame.event.pump()
 
@@ -42,6 +46,9 @@ class Controller:
         return axis_inputs
 
     def get_button_inputs(self):
+        if self.type != "Controller":
+            return None
+        
         # Get the current state of the controller
         pygame.event.pump()
 
@@ -106,12 +113,14 @@ class Controller:
         return button_inputs
     
     def get_keyboard_inputs(self):
-        keyboard_inputs = {}
+        keyboard_inputs = []
 
         for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
             if event.type == pygame.KEYDOWN:
-                keyboard_inputs[event.key] = True
-            elif event.type == pygame.KEYUP:
-                keyboard_inputs[event.key] = False
-        
+                keyboard_inputs.append(event.key)
+                print(event.key)
+
         return keyboard_inputs

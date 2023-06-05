@@ -46,10 +46,6 @@ class Window:
 
     # Returns True if pygame.QUIT
     def update_display(self):
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                return True
-
         # Clear the screen
         self.screen.fill(self.WHITE)
 

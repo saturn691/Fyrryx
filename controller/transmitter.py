@@ -30,7 +30,7 @@ class Transmitter:
             print("Not connected to any Wi-Fi network.")
         
         # Gets the UDP address (asks user for IP)
-        self.ip_address = self.findUDPAddress()
+        self.ip_address = self.__findUDPAddress()
 
         self.screenshot_button_held = False
 
@@ -100,27 +100,34 @@ class Transmitter:
     # Encodes keyboard data
     def encodeKeyboardData(self, keyboardData):
         data = {}
+        movement = False
 
-        if keyboardData["pygame.K_a"]:
+        if "pygame.K_a" in keyboardData:
             data["Movement X"] = -1
-        elif keyboardData["pygame.K_d"]:
+            movement = True
+        elif "pygame.K_d" in keyboardData:
             data["Movement X"] = 1
+            movement = True
         else:
             data["Movement X"] = 0
 
-        if keyboardData["pygame.K_w"]:
+        if "pygame.K_w" in keyboardData:
             data["Movement Y"] = -1
-        elif keyboardData["pygame.K_s"]:
+            movement = True
+        elif "pygame.K_s" in keyboardData:
             data["Movement Y"] = 1
+            movement = True
         else:
             data["Movement Y"] = 0
         
-        if data["pygame.K_LEFT"]:
+        if "pygame.K_LEFT" in keyboardData:
             data["Steering"] = -1
-        elif data["pygame.K_RIGHT"]:
+            movement = True
+        elif "pygame.K_RIGHT" in keyboardData:
             data["Steering"] = 1
+            movement = True
         
-        if keyboardData["pygame.K_a"] or keyboardData["pygame.K_d"] or keyboardData["pygame.K_w"] or keyboardData["pygame.K_s"] or keyboardData["pygame.K_LEFT"] or keyboardData["pygame.K_RIGHT"]:
+        if movement:
             data["Gas"] = 1
         else:
             data["Gas"] = 0
@@ -184,10 +191,10 @@ class Transmitter:
                 self.screenshot_button_held = False
         
         elif controller_type == "Keyboard":
-            if keyboard_inputs["pygame.K_r"]:
+            if "pygame.K_r" in keyboard_inputs:
                 self.__resetConnectionOnRequest()
             
-            if button_inputs["pygame.K_PRINTSCREEN"]:
+            if "pygame.K_PRINTSCREEN" in keyboard_inputs:
                 self.__screenshotDataOnRequest(data)
             else:
                 self.screenshot_button_held = False

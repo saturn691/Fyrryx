@@ -27,10 +27,10 @@ void RCMovementHandler::moveLeft(int power) {
 }
 
 void RCMovementHandler::moveRight(int power) {
-    analogWrite(back_right_pin, 128-power);
-    analogWrite(front_right_pin, 128+power);
-    analogWrite(front_left_pin, 128-power);
-    analogWrite(back_left_pin, 128+power);   
+    analogWrite(back_right_pin, 128+power);
+    analogWrite(front_right_pin, 128-power);
+    analogWrite(front_left_pin, 128+power);
+    analogWrite(back_left_pin, 128-power);   
 }
 
 void RCMovementHandler::moveForward(int power) {
