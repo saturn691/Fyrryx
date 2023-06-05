@@ -16,10 +16,12 @@
 #include <headers/ArduinoJson.h>
 #include <headers/receiver.h>
 #include <headers/RCMovementHandler.h>
+#include <headers/magnetic-field.h>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
 const int groupNumber = 7; // Set your group number to make the IP address constant - only do this on the EEERover network
+float min_max[2]; // Range of the magnetic field sensor
 
 Receiver receiver;
 WiFiWebServer server(6969);
@@ -78,6 +80,9 @@ void setup()
   analogWrite(FRONT_RIGHT_MOTOR, 128);
   analogWrite(FRONT_LEFT_MOTOR, 128);
   analogWrite(BACK_LEFT_MOTOR, 128);
+
+  // Initial calibrate of the Hall Effect sensor
+  calibrate(magneticFieldPin, min_max);
 }
 
 // Call the server polling function in the main loop
@@ -97,5 +102,5 @@ void loop()
 
     movementHandler.move(x, y, turning, gas);
   }
-
+  Serial.println(getMagneticField(magneticFieldPin, min_max));
 }
