@@ -8,72 +8,158 @@ To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJso
 *********************************************"""
 import socket
 import json
+import time
+import subprocess
 
 class Transmitter:
-    def __init__(self, TARGET_IP, TARGET_PORT):
-        self.TARGET_IP = TARGET_IP
-        self.port = TARGET_PORT
-
+    def __init__(self):
         # Create a UDP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
-        self.sock.settimeout(0.25)  # Set a timeout value to limit the scan duration
+        self.sock.settimeout(0.1)  # Set a timeout value to limit the scan duration
+        
+        self.port = 6969
+        self.ping = 0
+        self.packet_interval = 0.1 # Interval between packets in seconds
+        self.send_time = 0
 
-        self.ip_address = self.findUDPAddress()
+        # Shows what network we are connected to
+        ssid = self.__get_ssid()
+        if ssid:
+            print("Connected to Wi-Fi network:", ssid)
+        else:
+            print("Not connected to any Wi-Fi network.")
+        
+        # Gets the UDP address (asks user for IP)
+        self.ip_address = self.__findUDPAddress()
+
+        self.screenshot_button_held = False
+
+    # Returns the ssid of the network if connected
+    def __get_ssid(self):
+        try:
+            output = subprocess.check_output(["netsh", "wlan", "show", "interfaces"], universal_newlines=True)
+            lines = output.splitlines()
+            for line in lines:
+                if "SSID" in line:
+                    ssid = line.split(":")[1].strip()
+                    return ssid
+        except subprocess.CalledProcessError:
+            pass
+        return None
 
     # Blocking function that will continiously search for the server
-    def findUDPAddress(self):
-        ip_address = None
-        while ip_address == None:
-            ip_address = self.fetchUDPAddress()
+    def __findUDPAddress(self):
+        target_ip_address = input("Enter server address (192.168.0.XX): ")
+        if target_ip_address.isnumeric():
+            target_ip_address = f"192.168.0.{target_ip_address}"
+        
+        for i in range(10):
+            if self.__checkAddress((target_ip_address, self.port)):
+                break
+        else:
+            print("Couldn't connect to server. Please try again.\n")
+            return self.__findUDPAddress()
 
-        print("Connection established at IP: " + ip_address)
+        print("Connection established at IP: " + target_ip_address)
 
-        return ip_address
-
-    # Searches target IP, then searches IP from 1 to 255
-    def fetchUDPAddress(self):
-        if self.checkAddress(self.TARGET_IP) == True:
-            return self.TARGET_IP
-        else:    
-            for i in range(1, 255):
-                ip_address = f"192.168.0.{i}"  # Customize the IP address range based on your network configuration
-                if self.checkAddress(ip_address) == True:
-                    return ip_address
-
-        print(f"Nothing found at port {self.port} from IP = 192.168.0.XX . Please try again.")
+        return target_ip_address
 
     # Returns True if we can connect to the IP address at port using socket
-    def checkAddress(self, ip_address):
+    def __checkAddress(self, server_address):
         try:
-            server_address = (ip_address, self.port)
+            start_time = time.time()
+
             self.sock.sendto("ping".encode(), server_address)
+            print("Sent ping to server: " + server_address[0])
             data, addr = self.sock.recvfrom(1024)
-            if data.decode() == "pong":
-                return True
+
+            end_time = time.time()
+            
+            ping = (end_time - start_time) * 1000
+            self.ping = ping
+            
+            return True
+        
         except:
             return False
-
-    # Sends data to the server to be processed and handles resetting
-    def sendData(self, axis_inputs, button_inputs):
-        if button_inputs["Back"] and button_inputs["Start"]:
-            # Reset the connection
-            print("Connection reset")
-            self.ip_address = self.findUDPAddress()
-
+        
+    # Encodes data from a controller
+    def encodeControllerData(self, axis_inputs, button_inputs):
         data = {
-            "Movement" : axis_inputs["Left Stick X"],
+            "Movement X" : axis_inputs["Left Stick X"],
+            "Movement Y" : axis_inputs["Left Stick Y"],
             "Turning" : axis_inputs["Right Stick X"],
             "Gas" : axis_inputs["Right Trigger"],
             "Reverse" : axis_inputs["Left Trigger"],
             "Boost" : button_inputs["A"],
             "Brake" : button_inputs["B"]
-        }    
-
-        json_data = json.dumps(data)    
+        }  
         
-        server_address = (self.ip_address, self.port)
-        self.sock.sendto(json_data.encode(), server_address)
+        return data
+    
+    # Encodes keyboard data
+    def encodeKeyboardData(self, keyboardData):
+        data = {}
+        movement = False
 
+        if "pygame.K_a" in keyboardData:
+            data["Movement X"] = -1
+            movement = True
+        elif "pygame.K_d" in keyboardData:
+            data["Movement X"] = 1
+            movement = True
+        else:
+            data["Movement X"] = 0
+
+        if "pygame.K_w" in keyboardData:
+            data["Movement Y"] = -1
+            movement = True
+        elif "pygame.K_s" in keyboardData:
+            data["Movement Y"] = 1
+            movement = True
+        else:
+            data["Movement Y"] = 0
+        
+        if "pygame.K_LEFT" in keyboardData:
+            data["Steering"] = -1
+            movement = True
+        elif "pygame.K_RIGHT" in keyboardData:
+            data["Steering"] = 1
+            movement = True
+        
+        if movement:
+            data["Gas"] = 1
+        else:
+            data["Gas"] = 0
+        
+        data["Reverse"] = 0
+        data["Boost"] = 0
+        data["Brake"] = 0
+
+        return data
+
+    # Sends data to the server to be processed and handles resetting
+    def sendData(self, data):
+        if self.send_time + self.packet_interval > time.time():
+            return
+        self.send_time = time.time()
+
+        json_data = json.dumps(data)  
+        print(json_data)
+
+        server_address = (self.ip_address, self.port)
+        start_time = time.time()
+        self.sock.sendto(json_data.encode(), server_address)
+        try:
+            data, addr = self.sock.recvfrom(1024)
+        except:
+            self.ping = 9999
+            return
+        end_time = time.time()
+        ping = (end_time - start_time) * 1000
+        self.ping = ping
+
+    # Receives data from server and returns it
     def receiveData(self):
         try:
             data, addr = self.sock.recvfrom(1024)
@@ -92,3 +178,35 @@ class Transmitter:
             return received_data
         else:
             pass
+    
+    # Handles any requested inuputs (e.g. screenshot data)
+    def handleRequestedInputs(self, controller_type, button_inputs, keyboard_inputs, data):
+        if controller_type == "Controller":
+            if button_inputs["Back"] and button_inputs["Start"]:
+                self.__resetConnectionOnRequest()
+            
+            if button_inputs["LB"] and button_inputs["RB"]:
+                self.__screenshotDataOnRequest(data)
+            else:
+                self.screenshot_button_held = False
+        
+        elif controller_type == "Keyboard":
+            if "pygame.K_r" in keyboard_inputs:
+                self.__resetConnectionOnRequest()
+            
+            if "pygame.K_PRINTSCREEN" in keyboard_inputs:
+                self.__screenshotDataOnRequest(data)
+            else:
+                self.screenshot_button_held = False
+    
+    def __resetConnectionOnRequest(self):
+        # Reset the connection
+        print("Connection reset")
+        self.ip_address = self.__findUDPAddress()
+
+    def __screenshotDataOnRequest(self, data):
+        if not self.screenshot_button_held:
+            self.screenshot_button_held = True
+            print(data)
+        else:
+            return

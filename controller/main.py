@@ -1,20 +1,26 @@
-from xbox_controller import XboxController
+from controls import Controller
 from transmitter import Transmitter
 from window import Window
 
-# Define the target port and IP
-TARGET_PORT = 6969
-TARGET_IP = "192.169.0.8"
-
-controller = XboxController()
-# transmitter = Transmitter(TARGET_IP, TARGET_PORT)
+controller = Controller()
+transmitter = Transmitter()
 window = Window()
 
 while True:
-    # axis_inputs = controller.get_axis_inputs()
-    # button_inputs = controller.get_button_inputs()
-    # transmitter.sendData(axis_inputs, button_inputs)
-    # received_data = transmitter.receiveData()
-    received_data = {"Name" : "name", "Age": 0, "MagneticField": "up"}
-    window.update_info(received_data)
-    window.run()
+    axis_inputs = controller.get_axis_inputs()
+    button_inputs = controller.get_button_inputs()
+    keyboard_inputs = controller.get_keyboard_inputs() # Handles pygame.quit()
+
+    if controller.type == "Controller":    
+        data = transmitter.encodeControllerData(axis_inputs, button_inputs)
+    else:
+        data = transmitter.encodeKeyboardData(keyboard_inputs)
+    
+    transmitter.sendData(data)
+    received_data = transmitter.receiveData()
+    # received_data = {"Name" : "name", "Age": 0, "MagneticField": 0}
+
+    transmitter.handleRequestedInputs(controller.type, button_inputs, keyboard_inputs, window.get_info())
+
+    window.update_info(received_data, transmitter.ping)
+    window.update_display()

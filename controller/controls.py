@@ -1,19 +1,27 @@
 import pygame
+import sys
+from time import sleep
 
-class XboxController:
+class Controller:
     def __init__(self):
         # Initialize Pygame
         pygame.init()
         pygame.joystick.init()
+        self.type = "Controller"
 
-        # Initialize the Xbox controller
-        self.controller = pygame.joystick.Joystick(0)
-        self.controller.init()
+        try:
+            self.controller = pygame.joystick.Joystick(0)
+            self.controller.init()
+            self.dpad_state = (0, 0)
 
-        # Initialize the D-pad state
-        self.dpad_state = (0, 0)
+        except pygame.error:
+            print("WARNING: No controller found. Proceeding with keyboard controller (WASD to move, arrow keys to steer)")
+            self.type = "Keyboard"
 
     def get_axis_inputs(self):
+        if self.type != "Controller":
+            return None
+        
         # Get the current state of the controller
         pygame.event.pump()
 
@@ -38,6 +46,9 @@ class XboxController:
         return axis_inputs
 
     def get_button_inputs(self):
+        if self.type != "Controller":
+            return None
+        
         # Get the current state of the controller
         pygame.event.pump()
 
@@ -98,5 +109,18 @@ class XboxController:
         elif self.dpad_state == (-1, -1):
             button_inputs["D-pad Down"] = 1
             button_inputs["D-pad Left"] = 1
-
+        
         return button_inputs
+    
+    def get_keyboard_inputs(self):
+        keyboard_inputs = []
+
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                sys.exit()
+            if event.type == pygame.KEYDOWN:
+                keyboard_inputs.append(event.key)
+                print(event.key)
+
+        return keyboard_inputs

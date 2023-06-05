@@ -5,14 +5,15 @@
 #include <WiFiUdp.h>
 #include <headers/ArduinoJson.h>
 #include <string>
+#include <unordered_map>
 
 class Receiver {
 public:
     WiFiUDP udp;
     
-    void handleUDPPacket();
-    void decodeJSON(const char* jsonString);
-    void sendUDPPacket(std::string name, int age, int magnetic_field);
+    std::unordered_map<std::string, double> handleUDPPacket();
+    std::unordered_map<std::string, double> decodeJSON(const char* jsonString);
+    void sendUDPPacket(std::string name, int age, int magnetic_field); 
 };
 
 #endif

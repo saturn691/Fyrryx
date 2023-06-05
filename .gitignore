@@ -3,3 +3,8 @@
 .vscode/c_cpp_properties.json
 .vscode/launch.json
 .vscode/ipch
+controller/__pycache__/transmitter.cpython-310.pyc
+controller/__pycache__/window.cpython-310.pyc
+controller/__pycache__/xbox_controller.cpython-310.pyc
+controller/tempCodeRunnerFile.py
+controller/__pycache__/controls.cpython-310.pyc

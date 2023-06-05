@@ -10,71 +10,67 @@ To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJso
 
 const int BUFFER_SIZE = 255;
 
-void Receiver::handleUDPPacket() {
-// Recieve and process UDP packets
-int packetSize = udp.parsePacket();
-if (packetSize) {
-    char buffer[BUFFER_SIZE]; 
-    int len = udp.read(buffer, sizeof(buffer));
-    if (len > 0) {
-    buffer[len] = '\0'; // Add null-terminator to create a valid C-string
-    
-    // Process the received data as needed
-    Serial.print("Received data: ");
-    if (buffer[0] == '{') {
-        decodeJSON(buffer);
-    }
-    else {
-        Serial.println(buffer);
+std::unordered_map<std::string, double> Receiver::handleUDPPacket() {
+    // Recieve and process UDP packets
+    std::unordered_map<std::string, double> data = {};
+
+    int packetSize = udp.parsePacket();
+    if (packetSize) {
+        char buffer[BUFFER_SIZE]; 
+        int len = udp.read(buffer, sizeof(buffer));
+        if (len > 0) {
+            buffer[len] = '\0'; // Add null-terminator to create a valid C-string
+            
+            // Process the received data as needed
+            if (buffer[0] == '{') {
+                data = decodeJSON(buffer);
+                // Serial.println(buffer);
+            }
+            else {
+                Serial.print("Received data: ");
+                Serial.println(buffer);
+            }
+
+            // Send a "pong" when data is received
+            udp.beginPacket(udp.remoteIP(), udp.remotePort());
+            udp.write("pong");
+            udp.endPacket();
+            
+        }
     }
 
-    // Send a "pong" if pinged
-    udp.beginPacket(udp.remoteIP(), udp.remotePort());
-    udp.write("pong");
-    udp.endPacket();
-    }
-}
+    return data;
 }
 
-void Receiver::decodeJSON(const char* jsonString) {
-    // Create a StaticJsonDocument to hold the JSON data
-    // Adjust the capacity based on the size of your JSON data
+std::unordered_map<std::string, double> Receiver::decodeJSON(const char* jsonString) {
+    // Create a StaticJsonDocument to hold the JSON data with a capacity of 200 bytes
     // Use StaticJsonDocument to minimize dynamic memory allocation
-    // The capacity is specified in bytes
     StaticJsonDocument<200> jsonDocument;
 
     // Deserialize the JSON string into the JsonDocument
     DeserializationError error = deserializeJson(jsonDocument, jsonString);
+    
+    // Create an unordered map to store the JSON values
+    std::unordered_map<std::string, double> jsonData;
 
     // Check if parsing succeeded
     if (error) {
         Serial.print(F("JSON parsing failed! Error code: "));
         Serial.println(error.c_str());
-        return;
+        return jsonData;
     }
 
-    // Access the values in the JSON document
-    double movement = jsonDocument["Movement"];
-    double turning = jsonDocument["Turning"];
-    double gas = jsonDocument["Gas"];
-    double reverse = jsonDocument["Reverse"];
-    int boost = jsonDocument["Boost"];
-    int brake = jsonDocument["Brake"];
+    // Access the values in the JSON document and store them in the unordered map
+    jsonData["Movement X"] = jsonDocument["Movement X"];
+    jsonData["Movement Y"] = jsonDocument["Movement Y"];
+    jsonData["Turning"] = jsonDocument["Turning"];
+    jsonData["Gas"] = jsonDocument["Gas"];
+    jsonData["Reverse"] = jsonDocument["Reverse"];
+    jsonData["Boost"] = jsonDocument["Boost"];
+    jsonData["Brake"] = jsonDocument["Brake"];
 
-    // Do something with the extracted values
-    // Serial.print(F("Movement: "));
-    // Serial.println(movement);
-    // Serial.print(F("Turning: "));
-    // Serial.println(turning);
-    // Serial.print(F("Gas: "));
-    // Serial.println(gas);
-    // Serial.print(F("Reverse: "));
-    // Serial.println(reverse);
-    // Serial.print(F("Boost: "));
-    // Serial.println(boost);
-    // Serial.print(F("Brake: "));
-    // Serial.println(brake);
-    // Serial.println();
+    // Return the unordered map
+    return jsonData;
 }
 
 void Receiver::sendUDPPacket(std::string name, int age, int magnetic_field) {
