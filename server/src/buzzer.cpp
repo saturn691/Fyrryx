@@ -1,83 +1,138 @@
+/*
+ * Copyright (c) 2019, ArduinoGetStarted.com. All rights reserved.
+ *
+ * Redistribution and use in source and binary forms, with or without
+ * modification, are permitted provided that the following conditions
+ * are met:
+ *
+ * - Redistributions of source code must retain the above copyright
+ *   notice, this list of conditions and the following disclaimer.
+ *
+ * - Redistributions in binary form must reproduce the above copyright
+ *   notice, this list of conditions and the following disclaimer in the
+ *   documentation and/or other materials provided with the distribution.
+ *
+ * - Neither the name of the ArduinoGetStarted.com nor the names of its
+ *   contributors may be used to endorse or promote products derived from
+ *   this software without specific prior written permission.
+ *
+ * THIS SOFTWARE IS PROVIDED BY ARDUINOGETSTARTED.COM "AS IS" AND ANY EXPRESS OR
+ * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+ * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+ * DISCLAIMED. IN NO EVENT SHALL ARDUINOGETSTARTED.COM BE LIABLE FOR ANY DIRECT,
+ * INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+ * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+ * SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+ * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT,
+ * STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING
+ * IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
+ * POSSIBILITY OF SUCH DAMAGE.
+ */
+
 #include <headers/buzzer.h>
 
-#define  a3f    208     // 208 Hz
-#define  b3f    233     // 233 Hz
-#define  b3     247     // 247 Hz
-#define  c4     261     // 261 Hz MIDDLE C
-#define  c4s    277     // 277 Hz
-#define  e4f    311     // 311 Hz    
-#define  f4     349     // 349 Hz 
-#define  a4f    415     // 415 Hz  
-#define  b4f    466     // 466 Hz 
-#define  b4     493     // 493 Hz 
-#define  c5     523     // 523 Hz 
-#define  c5s    554     // 554  Hz
-#define  e5f    622     // 622 Hz  
-#define  f5     698     // 698 Hz 
-#define  f5s    740     // 740 Hz
-#define  a5f    831     // 831 Hz 
+ezBuzzer::ezBuzzer(int pin) {
+	_buzzerPin   = pin;
+	_buzzerState = BUZZER_IDLE;
 
-#define  rest    -1
+	_delayTime = 0;
+	_beepTime  = 0;
 
-#define beatlength 75 // determines tempo (lower = faster)
-#define beatseparationconstant 0.3
+	_startTime = 0;
 
-void Buzzer::play(int buzzer_pin, int rhythm[], int melody[]) {
-    int notelength;
-    int b = 0;
+	_melody = 0;
+	_noteDurations = 0;
+	_melodyLength  = 0;
+	_melodyIndex   = 0;
+	_notePauseTime = 0;
 
-    while (b < sizeof(melody) / sizeof(int)) {
-        notelength = beatlength * rhythm[b];
-        
-        if (melody[b] > 0) {
-            tone(buzzer_pin, melody[b], notelength);
-        }
-        
-        b++;
-        
-        delay(notelength);
-        noTone(buzzer_pin);
-        delay(notelength * beatseparationconstant);
-    }
+	pinMode(_buzzerPin, OUTPUT);
 }
 
-void Buzzer::horn(int buzzer_pin) {
-    int melody[] = {a4f};
-    int rhythm[] = {10};
+void ezBuzzer::stop(void){
+	noTone(_buzzerPin);
+	digitalWrite(_buzzerPin, LOW);
 
-    play(buzzer_pin, rhythm, melody);
+	_buzzerState = BUZZER_IDLE;
 }
 
-void Buzzer::rickroll_intro(int buzzer_pin) {
-    int song_intro_melody[] = {c5s,  e5f, e5f, f5, a5f, f5s, f5, e5f, c5s, e5f, rest, a4f, a4f};
-    int song_intro_rhythm[] = {6, 10, 6, 6, 1, 1, 1, 1, 6, 10, 4, 2, 10};
-
-    play(buzzer_pin, song_intro_rhythm, song_intro_melody);
-
+void ezBuzzer::beep(unsigned long beepTime) {
+	beep(beepTime, 0);
 }
 
-void Buzzer::rickroll_chorus(int buzzer_pin) {
-    int song_chorus_melody[] =
-    { b4f, b4f, a4f, a4f,
-    f5, f5, e5f, b4f, b4f, a4f, a4f, e5f, e5f, c5s, c5, b4f,
-    c5s, c5s, c5s, c5s,
-    c5s, e5f, c5, b4f, a4f, a4f, a4f, e5f, c5s,
-    b4f, b4f, a4f, a4f,
-    f5,  f5, e5f, b4f, b4f, a4f, a4f, a5f, c5, c5s, c5, b4f,
-    c5s, c5s, c5s, c5s,
-    c5s, e5f, c5, b4f, a4f, rest, a4f, e5f, c5s, rest
-    };
+void ezBuzzer::beep(unsigned long beepTime, unsigned long delay) {
+	_delayTime = delay;
+	_beepTime  = beepTime;
+	_buzzerState = BUZZER_BEEP_DELAY;
+	_startTime = millis();
+}
 
-    int song_chorus_rhythm[] =
-    { 1, 1, 1, 1,
-    3, 3, 6, 1, 1, 1, 1, 3, 3, 3, 1, 2,
-    1, 1, 1, 1,
-    3, 3, 3, 1, 2, 2, 2, 4, 8,
-    1, 1, 1, 1,
-    3, 3, 6, 1, 1, 1, 1, 3, 3, 3,  1, 2,
-    1, 1, 1, 1,
-    3, 3, 3, 1, 2, 2, 2, 4, 8, 4
-    };
+void ezBuzzer::playMelody(int *melody, int *noteDurations, int length) {
+	_melody = melody;
+	_noteDurations = noteDurations;
+	_melodyLength  = length;
+	_melodyIndex   = 0;
+	_notePauseTime = 0;
 
-    play(buzzer_pin, song_chorus_rhythm, song_chorus_melody);
+	_buzzerState = BUZZER_MELODY;
+	_startTime = millis();
+}
+
+int ezBuzzer::getState(void) {
+	return _buzzerState;
+}
+
+void ezBuzzer::loop(void) {
+
+	switch(_buzzerState) {
+		case BUZZER_IDLE:
+			break;
+
+		case BUZZER_BEEP_DELAY:
+			if ((unsigned long)(millis() - _startTime) >= _delayTime) {
+				_buzzerState = BUZZER_BEEPING;
+				_startTime = millis();
+
+				digitalWrite(_buzzerPin, HIGH);
+			}
+
+			break;
+
+		case BUZZER_BEEPING:
+			if ((unsigned long)(millis() - _startTime) >= _beepTime) {
+				_buzzerState = BUZZER_IDLE;
+				digitalWrite(_buzzerPin, LOW);
+			}
+
+			break;
+
+		case BUZZER_MELODY:
+			if(_melodyIndex < _melodyLength) {
+				if(!_notePauseTime) {
+					// to calculate the note duration, take the length of a semiquaver * note value (in semiquavers)
+					int duration = beatlength * _noteDurations[_melodyIndex];
+					tone(_buzzerPin, _melody[_melodyIndex], duration);
+
+					// to distinguish the notes, set a minimum time between them.
+					// the note's duration + 30% seems to work well:
+					_notePauseTime = duration * beatseparationconstant;
+					_startTime = millis();
+				}
+
+				if ((unsigned long)(millis() - _startTime) >= _notePauseTime) {
+					noTone(_buzzerPin); // stop the tone playing:
+					_notePauseTime = 0;
+					_melodyIndex++; // play next node
+				}
+			} 
+            else {
+				noTone(_buzzerPin);
+				_buzzerState = BUZZER_IDLE;
+			}
+
+			break;
+
+		default:
+			break;
+	}
 }

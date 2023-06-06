@@ -4,7 +4,7 @@
 void calibrate(int magneticFieldPin, float (& min_max)[2]){
     float min_value=1023;
     float max_value=0;
-    for(int i=0;i<2500;i++){
+    for(int i=0;i<500;i++){
         float magnetic_field=getRawField(magneticFieldPin);
         if(magnetic_field <min_value) {
             min_value=magnetic_field;
@@ -21,16 +21,15 @@ void calibrate(int magneticFieldPin, float (& min_max)[2]){
 // Gets the a noise-stabilized field value
 float getRawField(int magneticFieldPin) {
   float output=0;
-  for(int i=0;i<200;i++){
+  for(int i=0;i<50;i++){
     output=output+analogRead(magneticFieldPin);
   }
-  return output/200;
+  return output/50;
 }
 
 // Return -1 if the magnetic field is down, 0 if none, 1 if up
 int getMagneticField(int magneticFieldPin, float min_max[2]) {
     float magnetic_field=getRawField(A0);
-    Serial.println(magnetic_field);
     if(magnetic_field>min_max[1]){
       return 1;
     }

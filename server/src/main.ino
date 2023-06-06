@@ -98,6 +98,8 @@ void loop()
     double x = packetData["Movement X"];
     double y = packetData["Movement Y"];
     double turning = packetData["Turning"];
+    int horn = packetData["Horn"];
+    int rickroll = packetData["Rickroll"];
 
     movementHandler.move(x, y, turning);
     
