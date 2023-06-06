@@ -82,6 +82,35 @@ int ezBuzzer::getState(void) {
 	return _buzzerState;
 }
 
+void ezBuzzer::rickroll_intro(void) {
+    int melody[] = {NOTE_CS5,  NOTE_DS5, NOTE_DS5, NOTE_F5, NOTE_GS5, NOTE_FS5, NOTE_F5, NOTE_DS5, NOTE_CS5, NOTE_DS5, REST, NOTE_DS4, NOTE_CS4};
+    int rhythm[] = {6, 10, 6, 6, 1, 1, 1, 1, 6, 10, 4, 4, 4};
+    int length = sizeof(rhythm) / sizeof(int);
+
+    if (_buzzerState == BUZZER_IDLE) {
+        playMelody(melody, rhythm, length);
+    }
+}
+
+void ezBuzzer::rickroll_chorus(void) {
+    int melody[] = 
+    { NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4,
+    NOTE_F5, NOTE_F5, NOTE_DS5, NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4, NOTE_DS5, NOTE_DS5, NOTE_CS5, NOTE_C5, NOTE_AS4,
+    NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4,
+    NOTE_CS5, NOTE_DS5, NOTE_C5, NOTE_AS4, NOTE_GS4, NOTE_GS4, NOTE_GS4, NOTE_DS5, NOTE_CS5 };
+    int rhythm[] = 
+    {1, 1, 1, 1,
+    3, 3, 6, 1, 1, 1, 1, 3, 3, 3, 1, 2,
+    1, 1, 1, 1,
+    3, 3, 3, 1, 2, 2, 2, 4, 8};
+
+    int length = sizeof(rhythm) / sizeof(int);
+
+    if (_buzzerState == BUZZER_IDLE) {
+        playMelody(melody, rhythm, length);
+    }
+}
+
 void ezBuzzer::loop(void) {
 
 	switch(_buzzerState) {

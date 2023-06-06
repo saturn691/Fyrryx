@@ -38,6 +38,7 @@
  * Public Constants
  *************************************************/
 
+#define REST 0
 #define NOTE_B0  31
 #define NOTE_C1  33
 #define NOTE_CS1 35
@@ -159,6 +160,8 @@ class ezBuzzer
 		void beep(unsigned long beepTime);
 		void beep(unsigned long beepTime, unsigned long delay);
 		void playMelody(int *melody, int *noteDurations, int length);
+        void rickroll_intro(void);
+        void rickroll_chorus(void);
 
 		int getState(void);
 		void loop(void);
