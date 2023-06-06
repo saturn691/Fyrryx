@@ -51,7 +51,6 @@ ezBuzzer::ezBuzzer(int pin) {
 
 void ezBuzzer::stop(void){
 	noTone(_buzzerPin);
-	digitalWrite(_buzzerPin, LOW);
 
 	_buzzerState = BUZZER_IDLE;
 }
@@ -122,7 +121,7 @@ void ezBuzzer::loop(void) {
 				_buzzerState = BUZZER_BEEPING;
 				_startTime = millis();
 
-				digitalWrite(_buzzerPin, HIGH);
+				tone(_buzzerPin, NOTE_A4);
 			}
 
 			break;
@@ -130,7 +129,7 @@ void ezBuzzer::loop(void) {
 		case BUZZER_BEEPING:
 			if ((unsigned long)(millis() - _startTime) >= _beepTime) {
 				_buzzerState = BUZZER_IDLE;
-				digitalWrite(_buzzerPin, LOW);
+				noTone(_buzzerPin);
 			}
 
 			break;
