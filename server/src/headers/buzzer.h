@@ -160,8 +160,8 @@ class ezBuzzer
 		void beep(unsigned long beepTime);
 		void beep(unsigned long beepTime, unsigned long delay);
 		void playMelody(int *melody, int *noteDurations, int length);
-        void rickroll_intro(void);
-        void rickroll_chorus(void);
+        void playIntro(void);
+        void playChorus(void);
 
 		int getState(void);
 		void loop(void);

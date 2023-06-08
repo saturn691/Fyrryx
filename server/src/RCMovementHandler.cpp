@@ -1,17 +1,5 @@
 #include <headers/RCMovementHandler.h>
 
-// Converts 0 to 1 to 0 to 128
-int RCMovementHandler::magnitudeToPower(double x, double y) {
-    int value = std::sqrt(x * x + y * y) * 128;
-    
-    if (value >= 128) {
-        return 128;
-    }
-    else {
-        return value;
-    }
-}
-
 void RCMovementHandler::rotateLeft(int power) {
     analogWrite(back_right_pin, 128-power);
     analogWrite(front_right_pin, 128-power);
@@ -54,39 +42,47 @@ void RCMovementHandler::moveBackward(int power) {
     analogWrite(back_left_pin, 128-power);  
 }
 
+void RCMovementHandler::twoDimensionalMove(double x, double y, double turning) {
+    double theta = atan2(y, x);
+    double power = hypot(x, y);
+    
+    double sine = sin(theta - PI/4);
+    double cosine = cos(theta - PI/4);
+    double maximum = max(abs(sine), abs(cosine));
+
+    double leftFront = power * cosine/maximum + turning;
+    double rightFront = power * sine/maximum - turning;
+    double leftBack = power * sine/maximum + turning;
+    double rightBack = power * cosine/maximum - turning;
+
+    if ((power + abs(turning)) > 1) {
+        leftFront /= power + abs(turning);
+        rightFront /= power + abs(turning);
+        leftBack /= power + abs(turning);
+        rightBack /= power + abs(turning);
+    }
+    
+    int mappedLeftFront = 128 + map(leftFront, -1, 1, 0, 128);
+    int mappedRightFront = 128 + map(rightFront, 1, -1, 0, 128);
+    int mappedLeftBack = 128 + map(leftBack, -1, 1, 0, 128);
+    int mappedRightBack = 128 + map(rightBack, -1, 1, 0, 128);
+
+    analogWrite(back_right_pin, mappedRightBack); 
+    analogWrite(front_right_pin, mappedRightFront);
+    analogWrite(front_left_pin, mappedLeftFront);
+    analogWrite(back_left_pin, mappedLeftBack); 
+} 
+
+
 void RCMovementHandler::move(double x, double y, double turning) {
-    int power = magnitudeToPower(x, y);
-    if (x > 0.5) {
-        Serial.println("Movement X: "); Serial.print(x);
-        moveRight(power);
-    }
-    else if (x < -0.5) {
-        Serial.println("Movement X: "); Serial.print(x);
-        moveLeft(power);
-    }
-    else if (y < -0.5) {
-        Serial.println("Movement Y: "); Serial.print(y);
-        moveForward(power);
-    }
-    else if (y > 0.5) {
-        Serial.println("Movement Y: "); Serial.print(y);
-        moveBackward(power);
-    }
-    else if (turning > 0.5) {
-        Serial.println("Turning: "); Serial.print(turning);
-        power = magnitudeToPower(turning, 0);
-        rotateRight(power);
-    }
-    else if (turning < -0.5) {
-        power = magnitudeToPower(turning, 0);
-        Serial.println("Turning: "); Serial.print(turning);
-        rotateLeft(power);
-    }
-    else {
+    if ((x < 0.5) && (x > -0.5) && (y < 0.5) && (y >-0.5)) {
         analogWrite(back_right_pin, 128);
         analogWrite(front_right_pin, 128);
         analogWrite(front_left_pin, 128);
         analogWrite(back_left_pin, 128);
+    }
+    else {
+        twoDimensionalMove(x, y, turning);
     }
 
 }

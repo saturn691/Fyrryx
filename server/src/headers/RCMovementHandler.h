@@ -7,11 +7,11 @@
 class RCMovementHandler {
 private:
     int back_right_pin;
-    int front_right_pin;
+    int front_right_pin;    
     int front_left_pin;
     int back_left_pin;
 
-    int magnitudeToPower(double x, double y);
+    void twoDimensionalMove(double x, double y, double steering);
     void moveForward(int power);
     void moveBackward(int power);
     void moveLeft(int power);

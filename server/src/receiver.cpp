@@ -8,9 +8,8 @@ To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJso
  ***************************************************************************************************************************************/
 #include <headers/receiver.h>
 
-const int BUFFER_SIZE = 255;
-
 std::unordered_map<std::string, double> Receiver::handleUDPPacket() {
+    
     // Recieve and process UDP packets
     std::unordered_map<std::string, double> data = {};
 
@@ -24,7 +23,7 @@ std::unordered_map<std::string, double> Receiver::handleUDPPacket() {
             // Process the received data as needed
             if (buffer[0] == '{') {
                 data = decodeJSON(buffer);
-                // Serial.println(buffer);
+                Serial.println(buffer);
             }
             else {
                 Serial.print("Received data: ");
@@ -65,7 +64,8 @@ std::unordered_map<std::string, double> Receiver::decodeJSON(const char* jsonStr
     jsonData["Movement Y"] = jsonDocument["Movement Y"];
     jsonData["Turning"] = jsonDocument["Turning"];
     jsonData["Horn"] = jsonDocument["Horn"];
-    jsonData["Rickroll"] = jsonDocument["Rickroll"];
+    jsonData["Intro"] = jsonDocument["Intro"];
+    jsonData["Chorus"] = jsonDocument["Chorus"];
 
     // Return the unordered map
     return jsonData;

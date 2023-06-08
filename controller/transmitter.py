@@ -89,9 +89,9 @@ class Transmitter:
             "Movement X" : axis_inputs["Left Stick X"],
             "Movement Y" : axis_inputs["Left Stick Y"],
             "Turning" : axis_inputs["Right Stick X"],
-            "Gas" : axis_inputs["Right Trigger"],
-            "Horn" : button_inputs["A"],
-            "Rickroll" : button_inputs["B"]
+            "Horn" : button_inputs["B"],
+            "Intro" : button_inputs["D-pad Up"],
+            "Chorus" : button_inputs["D-pad Down"]
         }  
         
         return data
@@ -116,12 +116,15 @@ class Transmitter:
             data["Movement Y"] = 0
         
         if "pygame.K_LEFT" in keyboardData:
-            data["Steering"] = -1
+            data["Turning"] = -1
         elif "pygame.K_RIGHT" in keyboardData:
-            data["Steering"] = 1
-        
-        data["Horn"] = 0
-        data["Rickroll"] = 0
+            data["Turning"] = 1
+        else:
+            data["Turning"] = 0
+    
+        data["Horn"] = 1 if "pygame.K_f" in keyboardData else 0
+        data["Intro"] = 1 if "pygame.K_1" in keyboardData else 0
+        data["Chorus"] = 1 if "pygame.K_2" in keyboardData else 0
 
         return data
 

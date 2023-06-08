@@ -86,7 +86,13 @@ class Controller:
             (0, -1): "D-pad Down",
             (0, 0): None  # No D-pad input
         }
+        
+        # Put all D-pad inputs into the dictionary
+        for dpad_state, dpad_name in dpad_inputs.items():
+            if dpad_name is not None:
+                button_inputs[dpad_name] = 0
 
+        # Handle single D-pad inputs
         if dpad_changed:
             for dpad_state, dpad_name in dpad_inputs.items():
                 if self.dpad_state == dpad_state:

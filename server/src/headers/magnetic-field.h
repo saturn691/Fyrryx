@@ -1,5 +1,5 @@
 #ifndef _MAGNETIC_FIELD_h
-#define _RECEIVER_FIELD_H
+#define _MAGNETIC_FIELD_h
 
 #include <Arduino.h>
 // Place any other includes here
