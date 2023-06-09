@@ -17,6 +17,7 @@ class Controller:
         except pygame.error:
             print("WARNING: No controller found. Proceeding with keyboard controller (WASD to move, arrow keys to steer)")
             self.type = "Keyboard"
+            self.keyboard_inputs = []
 
     def get_axis_inputs(self):
         if self.type != "Controller":
@@ -119,26 +120,14 @@ class Controller:
         return button_inputs
     
     def get_keyboard_inputs(self):
-        keyboard_inputs = []
-
-        button_mapping = {
-            0: "A",
-            1: "B",
-            2: "X",
-            3: "Y",
-            4: "LB",
-            5: "RB",
-            6: "Back",
-            7: "Start",
-            8: "Left Stick",
-            9: "Right Stick"
-        }
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                keyboard_inputs.append(event.key)   
+                self.keyboard_inputs.append(event.key)
+            elif event.type == pygame.KEYUP:
+                if event.key in self.keyboard_inputs:
+                    self.keyboard_inputs.remove(event.key) 
 
-        return keyboard_inputs
+        return self.keyboard_inputs

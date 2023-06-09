@@ -7,6 +7,7 @@ To encode/decode in python, "json" is used
 To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJson.h)
 *********************************************"""
 import socket
+import pygame
 import json
 import time
 import subprocess
@@ -101,30 +102,30 @@ class Transmitter:
         data = {}
         movement = False
 
-        if "pygame.K_a" in keyboardData:
+        if pygame.K_a in keyboardData:
             data["Movement X"] = -1
-        elif "pygame.K_d" in keyboardData:
+        elif pygame.K_d in keyboardData:
             data["Movement X"] = 1
         else:
             data["Movement X"] = 0
 
-        if "pygame.K_w" in keyboardData:
+        if pygame.K_w in keyboardData:
             data["Movement Y"] = -1
-        elif "pygame.K_s" in keyboardData:
+        elif pygame.K_s in keyboardData:
             data["Movement Y"] = 1
         else:
             data["Movement Y"] = 0
         
-        if "pygame.K_LEFT" in keyboardData:
+        if pygame.K_LEFT in keyboardData:
             data["Turning"] = -1
-        elif "pygame.K_RIGHT" in keyboardData:
+        elif pygame.K_RIGHT in keyboardData:
             data["Turning"] = 1
-        else:
+        else: 
             data["Turning"] = 0
     
-        data["Horn"] = 1 if "pygame.K_f" in keyboardData else 0
-        data["Intro"] = 1 if "pygame.K_1" in keyboardData else 0
-        data["Chorus"] = 1 if "pygame.K_2" in keyboardData else 0
+        data["Horn"] = 1 if pygame.K_f in keyboardData else 0
+        data["Intro"] = 1 if pygame.K_1 in keyboardData else 0
+        data["Chorus"] = 1 if pygame.K_2 in keyboardData else 0
 
         return data
 

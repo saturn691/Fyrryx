@@ -55,11 +55,11 @@ void connectToWiFi() {
     
     server.begin();
 
-  Serial.print(F("Connected, IP Address @ "));
-  Serial.println(static_cast<IPAddress>(WiFi.localIP()));
+  	Serial.print(F("Connected, IP Address @ "));
+  	Serial.println(static_cast<IPAddress>(WiFi.localIP()));
 
-  // Establish UDP connection at port 6969
-  receiver.udp.begin(6969);
+  	// Establish UDP connection at port 6969
+  	receiver.udp.begin(6969);
 }
 
 void setup()
@@ -75,7 +75,7 @@ void setup()
 
 	Serial.begin(9600);
 
-  	// while (!Serial && millis() < 10000);
+  	while (!Serial && millis() < 10000);
   	connectToWiFi();
 
 	digitalWrite(MOTOR_ENABLE_PIN, 1);
@@ -110,7 +110,7 @@ void loop()
 			buzzer.beep(100,100);
 		};
 		if (packetData["Intro"]) {
-			buzzer.playIntro();
+			buzzer.playIntro(); // Known bugs when called
 		}
 		if (packetData["Chorus"]) {
 			buzzer.playChorus();
