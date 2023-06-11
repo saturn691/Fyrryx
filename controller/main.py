@@ -2,10 +2,12 @@ from controls import Controller
 from transmitter import Transmitter
 from window import Window
 
+# Creates the objects that are needed
 controller = Controller()
 transmitter = Transmitter()
 window = Window()
 
+# Main game loop
 while True:
     axis_inputs = controller.get_axis_inputs()
     button_inputs = controller.get_button_inputs()

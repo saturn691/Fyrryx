@@ -13,6 +13,7 @@ import time
 import subprocess
 
 class Transmitter:
+    # This sets up the UDP socket and other member data
     def __init__(self):
         # Create a UDP socket
         self.sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -21,7 +22,7 @@ class Transmitter:
         self.port = 6969
         self.ping = 0
         self.packet_interval = 0.1 # Interval between packets in seconds
-        self.send_time = 0
+        self.send_time = time.time()
 
         # Shows what network we are connected to
         ssid = self.__get_ssid()
@@ -133,22 +134,23 @@ class Transmitter:
     def sendData(self, data):
         if self.send_time + self.packet_interval > time.time():
             return
-        self.send_time = time.time()
 
-        json_data = json.dumps(data)  
+        json_data = json.dumps(data) # Packages the data into a JSON file
         print(json_data)
 
         server_address = (self.ip_address, self.port)
-        start_time = time.time()
-        self.sock.sendto(json_data.encode(), server_address)
+        self.sock.sendto(json_data.encode(), server_address) # Sends the data to the server
         try:
-            data, addr = self.sock.recvfrom(1024)
+            data, addr = self.sock.recvfrom(1024) # Waits until a "pong" is received from the server
         except:
-            self.ping = 9999
+            self.ping = 9999 # There is a timeout of 100ms, so this activates when it timeouts
             return
-        end_time = time.time()
-        ping = (end_time - start_time) * 1000
-        self.ping = ping
+        
+        end_time = time.time() # Ends the timer
+        ping = (end_time - self.send_time) * 1000 # Works out the difference in ms
+        self.ping = ping  # Allows the user to fetch the ping
+        
+        self.start_time = time.time() # Starts the timer 
 
     # Receives data from server and returns it
     def receiveData(self):
@@ -190,11 +192,13 @@ class Transmitter:
             else:
                 self.screenshot_button_held = False
     
+    # Resets the connection
     def __resetConnectionOnRequest(self):
         # Reset the connection
         print("Connection reset")
         self.ip_address = self.__findUDPAddress()
 
+    # Screenshots the data on RISING EDGE
     def __screenshotDataOnRequest(self, data):
         if not self.screenshot_button_held:
             self.screenshot_button_held = True

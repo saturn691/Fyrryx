@@ -3,6 +3,7 @@ import sys
 from time import sleep
 
 class Controller:
+    # This function is automatically called when a Controller is created
     def __init__(self):
         # Initialize Pygame
         pygame.init()
@@ -19,6 +20,7 @@ class Controller:
             self.type = "Keyboard"
             self.keyboard_inputs = []
 
+    # Gets the axis (analogue) inputs of the controller. Outputs into a dictionary.
     def get_axis_inputs(self):
         if self.type != "Controller":
             return None
@@ -46,6 +48,7 @@ class Controller:
 
         return axis_inputs
 
+    # Gets the button (digital) inputs of the controller. Outputs into a dictionary.
     def get_button_inputs(self):
         if self.type != "Controller":
             return None
@@ -119,6 +122,7 @@ class Controller:
         
         return button_inputs
     
+    # Gets the keyboard inputs for the keyboard
     def get_keyboard_inputs(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:

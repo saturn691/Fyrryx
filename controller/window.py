@@ -6,6 +6,7 @@ SCREEN_WIDTH = 750
 SCREEN_HEIGHT = 200
 
 class Window:
+    # Sets up the display from pygame and member data structures
     def __init__(self):
         pygame.init()
 
@@ -30,6 +31,7 @@ class Window:
         self.magnetic_field = random.choice(["Up", "None", "Down"])
         self.ping = 0
 
+    # Updates the member data
     def update_info(self, received_data, ping):
         if received_data == None:
             return
@@ -41,6 +43,7 @@ class Window:
         self.magnetic_field = magnetic_field_key[self.magnetic_field]
         self.ping = ping
     
+    # Returns the member data
     def get_info(self):
         return {"Name": self.name, "Age": self.age, "MagneticField": self.magnetic_field}
 
