@@ -1,4 +1,4 @@
-#include <headers/magnetic-field.h>
+#include <magnetic-field.h>
 
 // Calibrates the Hall Effect sensor
 void calibrate(int magneticFieldPin, float (& min_max)[2]){

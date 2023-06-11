@@ -29,7 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <headers/buzzer.h>
+#include <buzzer.h>
 
 ezBuzzer::ezBuzzer(int pin) {
 	_buzzerPin   = pin;

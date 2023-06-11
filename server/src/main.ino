@@ -14,11 +14,11 @@
 
 #include <WiFiWebServer.h>
 #include <WiFiUdp.h>
-#include <headers/ArduinoJson.h>
-#include <headers/receiver.h>
-#include <headers/RCMovementHandler.h>
-#include <headers/magnetic-field.h>
-#include <headers/buzzer.h>
+#include <ArduinoJson.h>
+#include <receiver.h>
+#include <RCMovementHandler.h>
+#include <magnetic-field.h>
+#include <buzzer.h>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
@@ -110,7 +110,7 @@ void loop()
 			buzzer.beep(100,100);
 		};
 		if (packetData["Intro"]) {
-			buzzer.playIntro(); // Known bugs when called
+			buzzer.playIntro(); // Known bugs when called: probably due to the pin number
 		}
 		if (packetData["Chorus"]) {
 			buzzer.playChorus();

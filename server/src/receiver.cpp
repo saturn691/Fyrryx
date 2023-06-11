@@ -6,7 +6,7 @@ JSON will look something like this: {"key1":"value1","key2":"value2"}.
 To encode/decode in python, "json" is used
 To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJson.h)
  ***************************************************************************************************************************************/
-#include <headers/receiver.h>
+#include <receiver.h>
 
 std::unordered_map<std::string, double> Receiver::handleUDPPacket() {
     
