@@ -9,7 +9,7 @@
 #define FRONT_LEFT_MOTOR 6
 #define BACK_LEFT_MOTOR 13
 #define MOTOR_ENABLE_PIN 2 
-#define BUZZER_PIN 5
+#define BUZZER_PIN 9
 #define magneticFieldPin A0
 
 #include <WiFiWebServer.h>
@@ -70,6 +70,7 @@ void setup()
 	pinMode(FRONT_LEFT_MOTOR, OUTPUT);
 	pinMode(BACK_LEFT_MOTOR, OUTPUT);
 	pinMode(MOTOR_ENABLE_PIN, OUTPUT);
+	pinMode(magneticFieldPin, INPUT);
 
 	digitalWrite(LED_BUILTIN, 0);
 
@@ -110,12 +111,13 @@ void loop()
 			buzzer.beep(100,100);
 		};
 		if (packetData["Intro"]) {
-			buzzer.playIntro(); // Known bugs when called: probably due to the pin number
+			buzzer.playIntro(); 
 		}
 		if (packetData["Chorus"]) {
 			buzzer.playChorus();
 		}
 	}
-
-  	getMagneticField(magneticFieldPin, min_max);
+	Serial.println("Looping...");
+	analogRead(A0);
+  	getMagneticField(magneticFieldPin, min_max); // Crashes program when buzzer called
 }
