@@ -1,5 +1,10 @@
 #include <RCMovementHandler.h>
 
+double RCMovementHandler::map_double(double x, double in_min, double in_max, double out_min, double out_max)
+{
+  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
+}
+
 void RCMovementHandler::rotateLeft(int power) {
     analogWrite(back_right_pin, 128-power);
     analogWrite(front_right_pin, 128-power);
@@ -62,10 +67,10 @@ void RCMovementHandler::twoDimensionalMove(double x, double y, double turning) {
         rightBack /= power + abs(turning);
     }
     
-    int mappedLeftFront = 128 + map(leftFront, -1, 1, 0, 128);
-    int mappedRightFront = 128 + map(rightFront, 1, -1, 0, 128);
-    int mappedLeftBack = 128 + map(leftBack, -1, 1, 0, 128);
-    int mappedRightBack = 128 + map(rightBack, -1, 1, 0, 128);
+    int mappedLeftFront = 128 - map_double(leftFront, -1, 1, -128, 128);
+    int mappedRightFront = 128 + map_double(rightFront, -1, 1, -128, 128);
+    int mappedLeftBack = 128 - map_double(leftBack, -1, 1, -128, 128);
+    int mappedRightBack = 128 + map_double(rightBack, -1, 1, -128, 128);
 
     analogWrite(back_right_pin, mappedRightBack); 
     analogWrite(front_right_pin, mappedRightFront);

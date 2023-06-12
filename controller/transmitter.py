@@ -150,7 +150,7 @@ class Transmitter:
         ping = (end_time - self.send_time) * 1000 # Works out the difference in ms
         self.ping = ping  # Allows the user to fetch the ping
         
-        self.start_time = time.time() # Starts the timer 
+        self.send_time = time.time() # Starts the timer 
 
     # Receives data from server and returns it
     def receiveData(self):

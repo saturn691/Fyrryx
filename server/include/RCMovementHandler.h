@@ -11,6 +11,7 @@ private:
     int front_left_pin;
     int back_left_pin;
 
+    double map_double(double x, double in_min, double in_max, double out_min, double out_max);
     void twoDimensionalMove(double x, double y, double steering);
     void moveForward(int power);
     void moveBackward(int power);
