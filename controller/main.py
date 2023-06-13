@@ -20,7 +20,7 @@ while True:
     
     transmitter.sendData(data)
     received_data = transmitter.receiveData()
-    # received_data = {"Name" : "name", "Age": 0, "MagneticField": 0}
+    received_data = {"Name" : "name", "Age": 0, "MagneticField": 0}
 
     transmitter.handleRequestedInputs(controller.type, button_inputs, keyboard_inputs, window.get_info())
 

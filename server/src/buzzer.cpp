@@ -31,6 +31,19 @@
 
 #include <buzzer.h>
 
+int ezBuzzer::introMelody[] = {NOTE_CS5, NOTE_DS5, NOTE_DS5, NOTE_F5, NOTE_GS5, NOTE_FS5, NOTE_F5, NOTE_DS5, NOTE_CS5, NOTE_DS5, REST, NOTE_DS4, NOTE_CS4};
+int ezBuzzer::introRhythm[] = {6, 10, 6, 6, 1, 1, 1, 1, 6, 10, 4, 4, 4};
+int ezBuzzer::chorusMelody[] =  
+	{ NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4,
+	NOTE_F5, NOTE_F5, NOTE_DS5, NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4, NOTE_DS5, NOTE_DS5, NOTE_CS5, NOTE_C5, NOTE_AS4,
+	NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4,
+	NOTE_CS5, NOTE_DS5, NOTE_C5, NOTE_AS4, NOTE_GS4, NOTE_GS4, NOTE_GS4, NOTE_DS5, NOTE_CS5 };
+int ezBuzzer::chorusRhythm[] = 
+	{1, 1, 1, 1,
+	3, 3, 6, 1, 1, 1, 1, 3, 3, 3, 1, 2,
+	1, 1, 1, 1,
+	3, 3, 3, 1, 2, 2, 2, 4, 8};
+
 ezBuzzer::ezBuzzer(int pin) {
 	_buzzerPin   = pin;
 	_buzzerState = BUZZER_IDLE;
@@ -82,31 +95,18 @@ int ezBuzzer::getState(void) {
 }
 
 void ezBuzzer::playIntro(void) {
-    int melody[] = {NOTE_CS5,  NOTE_DS5, NOTE_DS5, NOTE_F5, NOTE_GS5, NOTE_FS5, NOTE_F5, NOTE_DS5, NOTE_CS5, NOTE_DS5, REST, NOTE_DS4, NOTE_CS4};
-    int rhythm[] = {6, 10, 6, 6, 1, 1, 1, 1, 6, 10, 4, 4, 4};
-    int length = sizeof(rhythm) / sizeof(int);
+    int length = sizeof(introRhythm) / sizeof(int);
 
-    if (_buzzerState == BUZZER_IDLE) {
-        playMelody(melody, rhythm, length);
+    if (getState() == BUZZER_IDLE) {
+        playMelody(introMelody, introRhythm, length);
     }
 }
 
 void ezBuzzer::playChorus(void) {
-    int melody[] = 
-    { NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4,
-    NOTE_F5, NOTE_F5, NOTE_DS5, NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4, NOTE_DS5, NOTE_DS5, NOTE_CS5, NOTE_C5, NOTE_AS4,
-    NOTE_GS4, NOTE_AS4, NOTE_CS5, NOTE_AS4,
-    NOTE_CS5, NOTE_DS5, NOTE_C5, NOTE_AS4, NOTE_GS4, NOTE_GS4, NOTE_GS4, NOTE_DS5, NOTE_CS5 };
-    int rhythm[] = 
-    {1, 1, 1, 1,
-    3, 3, 6, 1, 1, 1, 1, 3, 3, 3, 1, 2,
-    1, 1, 1, 1,
-    3, 3, 3, 1, 2, 2, 2, 4, 8};
-
-    int length = sizeof(rhythm) / sizeof(int);
+    int length = sizeof(chorusRhythm) / sizeof(int);
 
     if (_buzzerState == BUZZER_IDLE) {
-        playMelody(melody, rhythm, length);
+        playMelody(chorusMelody, chorusRhythm, length);
     }
 }
 

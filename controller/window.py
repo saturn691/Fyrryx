@@ -21,7 +21,7 @@ class Window:
         self.GRAY = (128, 128, 128)
 
         # Retro font
-        self.font_path = "pixeloid-font/PixeloidMono.ttf"
+        self.font_path = "pixeloid_sans/PixeloidSans.ttf"
         self.font_size = 28
         self.font = pygame.freetype.Font(self.font_path, self.font_size)
 

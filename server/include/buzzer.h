@@ -140,6 +140,11 @@
 class ezBuzzer
 {
 	private:
+		static int introMelody[];
+      	static int introRhythm[];
+      	static int chorusMelody[];
+      	static int chorusRhythm[];
+
 		int _buzzerPin;
 		int _buzzerState;
 

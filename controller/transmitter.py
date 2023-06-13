@@ -21,7 +21,7 @@ class Transmitter:
         
         self.port = 6969
         self.ping = 0
-        self.packet_interval = 0.1 # Interval between packets in seconds
+        self.packet_interval = 0 # Interval between packets in seconds
         self.send_time = time.time()
 
         # Shows what network we are connected to

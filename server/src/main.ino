@@ -9,7 +9,7 @@
 #define FRONT_LEFT_MOTOR 6
 #define BACK_LEFT_MOTOR 13
 #define MOTOR_ENABLE_PIN 2 
-#define BUZZER_PIN 9
+#define BUZZER_PIN 8
 #define magneticFieldPin A0
 
 #include <WiFiWebServer.h>
@@ -97,7 +97,7 @@ void loop()
 	}
 
 	std::unordered_map<std::string, double> packetData = receiver.handleUDPPacket();
-	receiver.sendUDPPacket("Hello, world!", 69, 0);
+	receiver.sendUDPPacket("Lorem ipsum", 0, 0);
 	buzzer.loop();
 
 	if (!packetData.empty()) {
@@ -117,7 +117,5 @@ void loop()
 			buzzer.playChorus();
 		}
 	}
-	Serial.println("Looping...");
-	analogRead(A0);
-  	getMagneticField(magneticFieldPin, min_max); // Crashes program when buzzer called
+  	// getMagneticField(magneticFieldPin, min_max); // Crashes program when buzzer called
 }
