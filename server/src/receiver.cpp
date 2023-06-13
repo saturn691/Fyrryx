@@ -6,11 +6,10 @@ JSON will look something like this: {"key1":"value1","key2":"value2"}.
 To encode/decode in python, "json" is used
 To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJson.h)
  ***************************************************************************************************************************************/
-#include <headers/receiver.h>
-
-const int BUFFER_SIZE = 255;
+#include <receiver.h>
 
 std::unordered_map<std::string, double> Receiver::handleUDPPacket() {
+    
     // Recieve and process UDP packets
     std::unordered_map<std::string, double> data = {};
 
@@ -24,7 +23,7 @@ std::unordered_map<std::string, double> Receiver::handleUDPPacket() {
             // Process the received data as needed
             if (buffer[0] == '{') {
                 data = decodeJSON(buffer);
-                // Serial.println(buffer);
+                Serial.println(buffer);
             }
             else {
                 Serial.print("Received data: ");
@@ -64,10 +63,9 @@ std::unordered_map<std::string, double> Receiver::decodeJSON(const char* jsonStr
     jsonData["Movement X"] = jsonDocument["Movement X"];
     jsonData["Movement Y"] = jsonDocument["Movement Y"];
     jsonData["Turning"] = jsonDocument["Turning"];
-    jsonData["Gas"] = jsonDocument["Gas"];
-    jsonData["Reverse"] = jsonDocument["Reverse"];
-    jsonData["Boost"] = jsonDocument["Boost"];
-    jsonData["Brake"] = jsonDocument["Brake"];
+    jsonData["Horn"] = jsonDocument["Horn"];
+    jsonData["Intro"] = jsonDocument["Intro"];
+    jsonData["Chorus"] = jsonDocument["Chorus"];
 
     // Return the unordered map
     return jsonData;

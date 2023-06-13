@@ -3,6 +3,7 @@ import sys
 from time import sleep
 
 class Controller:
+    # This function is automatically called when a Controller is created
     def __init__(self):
         # Initialize Pygame
         pygame.init()
@@ -17,7 +18,9 @@ class Controller:
         except pygame.error:
             print("WARNING: No controller found. Proceeding with keyboard controller (WASD to move, arrow keys to steer)")
             self.type = "Keyboard"
+            self.keyboard_inputs = []
 
+    # Gets the axis (analogue) inputs of the controller. Outputs into a dictionary.
     def get_axis_inputs(self):
         if self.type != "Controller":
             return None
@@ -45,6 +48,7 @@ class Controller:
 
         return axis_inputs
 
+    # Gets the button (digital) inputs of the controller. Outputs into a dictionary.
     def get_button_inputs(self):
         if self.type != "Controller":
             return None
@@ -86,7 +90,13 @@ class Controller:
             (0, -1): "D-pad Down",
             (0, 0): None  # No D-pad input
         }
+        
+        # Put all D-pad inputs into the dictionary
+        for dpad_state, dpad_name in dpad_inputs.items():
+            if dpad_name is not None:
+                button_inputs[dpad_name] = 0
 
+        # Handle single D-pad inputs
         if dpad_changed:
             for dpad_state, dpad_name in dpad_inputs.items():
                 if self.dpad_state == dpad_state:
@@ -112,15 +122,16 @@ class Controller:
         
         return button_inputs
     
+    # Gets the keyboard inputs for the keyboard
     def get_keyboard_inputs(self):
-        keyboard_inputs = []
-
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 pygame.quit()
                 sys.exit()
             if event.type == pygame.KEYDOWN:
-                keyboard_inputs.append(event.key)
-                print(event.key)
+                self.keyboard_inputs.append(event.key)
+            elif event.type == pygame.KEYUP:
+                if event.key in self.keyboard_inputs:
+                    self.keyboard_inputs.remove(event.key) 
 
-        return keyboard_inputs
+        return self.keyboard_inputs
