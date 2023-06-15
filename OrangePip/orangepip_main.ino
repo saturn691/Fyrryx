@@ -117,7 +117,7 @@ class name_detection{
       pin=pin_in;
       pinMode(pin,INPUT);
     }
-
+    // Outputs the name when called
     String result(){
         String name=Serial.readStringUntil('#');
         if(name.length()==3){
@@ -129,30 +129,32 @@ class name_detection{
     int pin;
 };
 
+// Instantiates a new object of each class
 age_detection age(5);
 magnetic_detection magnet(A0);
 name_detection name(0);
 
 char buffer[32];
 
+// Sends the data to the master device
 void send_data(){
   Wire.write(buffer);
 }
 
+// Receives data from the master device and runs calibration
 void run_calibration(int master_input){
-  input = Wire.read();
-  if (input==0){
+  master_input = Wire.read();
+  if (master_input==0){
     magnet.calibrate();
   }
 }
 
+// Encodes the name to ASCII before sending it to the master
 int encodeToASCII(const String& input) {
     int encodedValue = 0;
-    
     for (char c : input) {
         encodedValue = (encodedValue * 1000) + static_cast<int>(c);
     }
-    
     return encodedValue;
 }
 
@@ -174,7 +176,6 @@ void loop() {
   else{
     name_output="No";
   }
-  
   
   data["N"]=encodeToASCII(name_output);
   data["A"]=age.result();
