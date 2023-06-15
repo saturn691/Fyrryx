@@ -17,16 +17,14 @@
 #include <ArduinoJson.h>
 #include <receiver.h>
 #include <RCMovementHandler.h>
-#include <magnetic-field.h>
 #include <buzzer.h>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
 const int groupNumber = 7; // Set your group number to make the IP address constant - only do this on the EEERover network
 const int port = 6969;
-float min_max[2]; // Range of the magnetic field sensor
 
-Receiver receiver;
+Receiver receiver(1);
 WiFiWebServer server(port);
 RCMovementHandler movementHandler(BACK_RIGHT_MOTOR, FRONT_RIGHT_MOTOR, FRONT_LEFT_MOTOR, BACK_LEFT_MOTOR); 
 ezBuzzer buzzer(BUZZER_PIN);
@@ -60,6 +58,7 @@ void connectToWiFi() {
 
   	// Establish UDP connection at port 6969
   	receiver.udp.begin(6969);
+    receiver.wireSetup();
 }
 
 void setup()
@@ -76,17 +75,14 @@ void setup()
 
 	Serial.begin(9600);
 
-  	while (!Serial && millis() < 10000);
-  	connectToWiFi();
+  while (!Serial && millis() < 10000);
+  connectToWiFi();
 
 	digitalWrite(MOTOR_ENABLE_PIN, 1);
 	analogWrite(BACK_RIGHT_MOTOR, 128);
 	analogWrite(FRONT_RIGHT_MOTOR, 128);
 	analogWrite(FRONT_LEFT_MOTOR, 128);
 	analogWrite(BACK_LEFT_MOTOR, 128);
-
-	// Initial calibrate of the Hall Effect sensor
-	calibrate(magneticFieldPin, min_max);
 }
 
 // Call the server polling function in the main loop
@@ -98,6 +94,7 @@ void loop()
 
 	std::unordered_map<std::string, double> packetData = receiver.handleUDPPacket();
 	receiver.sendUDPPacket("Lorem ipsum", 0, 0);
+	receiver.handleWirePacket();
 	buzzer.loop();
 
 	if (!packetData.empty()) {
