@@ -1,13 +1,17 @@
+// Global variables
 int counter=0;
 float min_max[2];
+
+// Finds the raw field
 float getMagneticField(int magneticFieldPin) {
   float output=0;
-  for(int i=0;i<100;i++){
+  for(int i=0;i<80;i++){
     output=output+analogRead(magneticFieldPin);
   }
-  return output/100;
+  return output/80;
 }
 
+// Calibration function
 void calibrate(int magneticFieldPin, float (& min_max)[2]){
   float min_value=1023;
   float max_value=0;
@@ -24,6 +28,7 @@ void calibrate(int magneticFieldPin, float (& min_max)[2]){
   min_max[1]=max_value;
 }
 
+// Outputs the final result
 int get_magnetic_field(){
   float magnetic_field=getMagneticField(A0);
   if(magnetic_field>min_max[1]){
@@ -38,14 +43,16 @@ int get_magnetic_field(){
     return 0;
   }
 }
+
 void setup() {
-  // put your setup code here, to run once:
   pinMode(A0, INPUT);
   Serial.begin(9600);
+  // Finds the time calibration took
   float calibration = millis();
   calibrate(A0, min_max);
   float calibration2 = millis();
   Serial.println("Calibration took ");Serial.print(calibration2-calibration);Serial.print("ms");
+  // Finds the number of errors per second
   float time = millis();
   for(int i=0;i<5000;i++){
     get_magnetic_field();
@@ -55,7 +62,7 @@ void setup() {
 }
 
 void loop() {
-  // put your main code here, to run repeatedly:
+  // To find the range
   int magnetic_field=get_magnetic_field();
   Serial.println(magnetic_field);
 }
