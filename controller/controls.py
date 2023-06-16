@@ -126,8 +126,7 @@ class Controller:
     def get_keyboard_inputs(self):
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
-                pygame.quit()
-                sys.exit()
+                return "EXIT"
             if event.type == pygame.KEYDOWN:
                 self.keyboard_inputs.append(event.key)
             elif event.type == pygame.KEYUP:
