@@ -142,9 +142,11 @@ name_detection name(0);
 
 char buffer[32];
 
+
 // Sends the data to the master device
 void send_data() {
   Wire.write(buffer);
+  memset(buffer, 0, sizeof(buffer));
 }
 
 // Receives data from the master device and runs calibration
@@ -166,7 +168,7 @@ int encodeToASCII(const String& input) {
 
 void setup() {
   pinMode(0, INPUT);
-  Serial.begin(9600);
+  Serial.begin(600);
   Wire.begin(1);
   Wire.onReceive(run_calibration);
   Wire.onRequest(send_data);
@@ -177,14 +179,16 @@ void loop() {
   DynamicJsonDocument data(32);
 
   String name_output;
-  if (Serial.available()) {
-   name_output = name.result();
-  } 
-  else {
-    name_output = "No";
-  }
 
-  data["N"] = encodeToASCII(name_output);
+  if (Serial.available()) {
+    Serial.println("got to here"); // Debugging purposes
+    name_output = name.result();
+  }
+  else{
+    name_output="No";
+  }
+  //data["N"] = encodeToASCII(name_output);
+  data["N"]=name_output;
   data["A"] = age.result();
   data["M"] = magnet.result();
   serializeJson(data, buffer, sizeof(buffer));
