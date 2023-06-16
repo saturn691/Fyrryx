@@ -78,6 +78,18 @@ std::unordered_map<std::string, double> Receiver::decodeJSON(const char* jsonStr
     return jsonData;
 }
 
+std::string Receiver::decodeFromASCII(int encodedValue) {
+    std::string decodedString;
+    
+    while (encodedValue > 0) {
+        int asciiValue = encodedValue % 1000;
+        decodedString = static_cast<char>(asciiValue) + decodedString;
+        encodedValue /= 1000;
+    }
+    
+    return decodedString;
+}
+
 void Receiver::sendUDPPacket(std::string name, int age, int magnetic_field) {
     DynamicJsonDocument jsonDoc(BUFFER_SIZE);
 
@@ -93,7 +105,8 @@ void Receiver::sendUDPPacket(std::string name, int age, int magnetic_field) {
     udp.endPacket();
 }
 
-void Receiver::handleWirePacket() {
+std::unordered_map<std::string, double> Receiver::handleWirePacket() {
+    std::unordered_map<std::string, double> data = {};
     Wire.requestFrom(address, WIRE_BUFFER_SIZE);
 
     if (Wire.available()) {
@@ -102,20 +115,15 @@ void Receiver::handleWirePacket() {
 
          if (bytesRead > 0) {
             buffer[bytesRead] = '\0'; 
+            data = decodeJSON(buffer);
          }
-
-        std::unordered_map<std::string, double> data = decodeJSON(buffer);
-        for (auto const & pair : data) {
-            Serial.print(pair.first.c_str());
-            Serial.print(": ");
-            Serial.println(String(pair.second).c_str());
-        }
     }
+
+    return data;
 }
 
 void Receiver::sendWirePacket(int message) {
     Wire.beginTransmission(address);
     Wire.write(message);
     Wire.endTransmission();
-
 }

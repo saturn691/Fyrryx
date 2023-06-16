@@ -27,7 +27,7 @@ std::string decodeFromASCII(int encodedValue) {
 int main(int argc, char* argv[]) {
     std::vector<std::string> names = {"Ava", "Bea", "Cay", "Dan", "Eva", "Fay", "Gia", "Hal", "Ida", "Jay",
                                  "Kai", "Leo", "Mae", "Nia", "Ora", "Pia", "Qua", "Rae", "Sky", "Taj",
-                                 "Uma", "Van", "Wyn", "Xia", "Yen", "Zia"};
+                                 "Uma", "Van", "Wyn", "Xia", "Yen", "Zia", "No", "Stormzy"};
     
     int testsPassed = 0;
     for (int i = 0; i < names.size(); i++) {
@@ -35,9 +35,12 @@ int main(int argc, char* argv[]) {
         if (names[i] == name) {
             testsPassed++;
         }
+        else {
+            std::cout << "FAILED: " << name << " (expected: " << names[i] << ")" << std::endl;
+        }
     }
 
     std::cout << "Passed " <<testsPassed << " out of " << names.size() << " tests." << std::endl;
-
+    std::cout << encodeToASCII("Kay");
     return 0;
 }

@@ -18,6 +18,7 @@
 #include <receiver.h>
 #include <RCMovementHandler.h>
 #include <buzzer.h>
+#include <string>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
@@ -93,8 +94,18 @@ void loop()
 	}
 
 	std::unordered_map<std::string, double> packetData = receiver.handleUDPPacket();
-	receiver.sendUDPPacket("Lorem ipsum", 0, 0);
-	receiver.handleWirePacket();
+	std::unordered_map<std::string, double> sensorData = receiver.handleWirePacket();
+	
+	std::string name;
+	if (!name.empty()) {
+		name = Receiver::decodeFromASCII(sensorData["N"]);
+	}
+	else name = "None";
+
+	if (!sensorData.empty()) {
+		receiver.sendUDPPacket(name, sensorData["A"], sensorData["M"]);
+	}
+
 	buzzer.loop();
 
 	if (!packetData.empty()) {
@@ -114,5 +125,4 @@ void loop()
 			buzzer.playChorus();
 		}
 	}
-  	// getMagneticField(magneticFieldPin, min_max); // Crashes program when buzzer called
 }
