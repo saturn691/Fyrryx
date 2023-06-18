@@ -124,5 +124,8 @@ void loop()
 		if (packetData["Chorus"]) {
 			buzzer.playChorus();
 		}
+		if (packetData["Calibrate"]) {
+			receiver.sendWirePacket(CALIBRATE_FUNCTION);
+		}
 	}
 }
