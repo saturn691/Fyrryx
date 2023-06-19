@@ -184,7 +184,7 @@ void loop() {
   String name_output;
 
   if (Serial.available()) {
-    Serial.println("got to here"); // Debugging purposes
+    Serial.println("got to here"); // Debugging purposess,,
     name_output = name.result();
   }
   else{
