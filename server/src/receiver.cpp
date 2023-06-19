@@ -1,5 +1,5 @@
 /**************************************************************************************************************************************
-Fyrryx UDP Protocol
+Fyrryx UDP/Wire Protocol
 
 Data is encoded into JSON format before sending/recieving, except for pings ("ping" is answered by "pong").
 JSON will look something like this: {"key1":"value1","key2":"value2"}.
@@ -7,6 +7,12 @@ To encode/decode in python, "json" is used
 To encode/decode in CPP, "ArduinoJson.h" is used (located in /headers/ArduinoJson.h)
  ***************************************************************************************************************************************/
 #include <receiver.h>
+
+void Receiver::wireSetup() {
+    Wire.begin();
+    sendWirePacket(CALIBRATE_FUNCTION);
+    Serial.println("Wire Initialized");
+}
 
 std::unordered_map<std::string, double> Receiver::handleUDPPacket() {
     
@@ -60,15 +66,28 @@ std::unordered_map<std::string, double> Receiver::decodeJSON(const char* jsonStr
     }
 
     // Access the values in the JSON document and store them in the unordered map
-    jsonData["Movement X"] = jsonDocument["Movement X"];
-    jsonData["Movement Y"] = jsonDocument["Movement Y"];
-    jsonData["Turning"] = jsonDocument["Turning"];
-    jsonData["Horn"] = jsonDocument["Horn"];
-    jsonData["Intro"] = jsonDocument["Intro"];
-    jsonData["Chorus"] = jsonDocument["Chorus"];
+    for (const auto& kv : jsonDocument.as<JsonObject>()) {
+        if (kv.value().is<double>()) {
+            std::string key = kv.key().c_str();
+            double value = kv.value().as<double>();
+            jsonData[key] = value;
+        }
+    }
 
     // Return the unordered map
     return jsonData;
+}
+
+std::string Receiver::decodeFromASCII(int encodedValue) {
+    std::string decodedString;
+    
+    while (encodedValue > 0) {
+        int asciiValue = encodedValue % 1000;
+        decodedString = static_cast<char>(asciiValue) + decodedString;
+        encodedValue /= 1000;
+    }
+    
+    return decodedString;
 }
 
 void Receiver::sendUDPPacket(std::string name, int age, int magnetic_field) {
@@ -84,4 +103,27 @@ void Receiver::sendUDPPacket(std::string name, int age, int magnetic_field) {
     udp.beginPacket(udp.remoteIP(), udp.remotePort());
     udp.write(reinterpret_cast<const uint8_t*>(buffer), strlen(buffer));
     udp.endPacket();
+}
+
+std::unordered_map<std::string, double> Receiver::handleWirePacket() {
+    std::unordered_map<std::string, double> data = {};
+    Wire.requestFrom(address, WIRE_BUFFER_SIZE);
+
+    if (Wire.available()) {
+        char buffer[WIRE_BUFFER_SIZE];
+        int bytesRead = Wire.readBytes(buffer, WIRE_BUFFER_SIZE);
+
+         if (bytesRead > 0) {
+            buffer[bytesRead] = '\0'; 
+            data = decodeJSON(buffer);
+         }
+    }
+
+    return data;
+}
+
+void Receiver::sendWirePacket(int message) {
+    Wire.beginTransmission(address);
+    Wire.write(message);
+    Wire.endTransmission();
 }

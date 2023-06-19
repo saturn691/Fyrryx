@@ -7,9 +7,9 @@
 #define BACK_RIGHT_MOTOR 3 // This is the pins that we use
 #define FRONT_RIGHT_MOTOR 4
 #define FRONT_LEFT_MOTOR 6
-#define BACK_LEFT_MOTOR 13
+#define BACK_LEFT_MOTOR 8
 #define MOTOR_ENABLE_PIN 2 
-#define BUZZER_PIN 8
+#define BUZZER_PIN 13
 #define magneticFieldPin A0
 
 #include <WiFiWebServer.h>
@@ -17,16 +17,15 @@
 #include <ArduinoJson.h>
 #include <receiver.h>
 #include <RCMovementHandler.h>
-#include <magnetic-field.h>
 #include <buzzer.h>
+#include <string>
 
 const char ssid[] = "EEERover";
 const char pass[] = "exhibition";
 const int groupNumber = 7; // Set your group number to make the IP address constant - only do this on the EEERover network
 const int port = 6969;
-float min_max[2]; // Range of the magnetic field sensor
 
-Receiver receiver;
+Receiver receiver(1);
 WiFiWebServer server(port);
 RCMovementHandler movementHandler(BACK_RIGHT_MOTOR, FRONT_RIGHT_MOTOR, FRONT_LEFT_MOTOR, BACK_LEFT_MOTOR); 
 ezBuzzer buzzer(BUZZER_PIN);
@@ -60,6 +59,7 @@ void connectToWiFi() {
 
   	// Establish UDP connection at port 6969
   	receiver.udp.begin(6969);
+    receiver.wireSetup();
 }
 
 void setup()
@@ -76,7 +76,7 @@ void setup()
 
 	Serial.begin(9600);
 
-  	while (!Serial && millis() < 10000);
+  	// while (!Serial && millis() < 10000);
   	connectToWiFi();
 
 	digitalWrite(MOTOR_ENABLE_PIN, 1);
@@ -84,9 +84,6 @@ void setup()
 	analogWrite(FRONT_RIGHT_MOTOR, 128);
 	analogWrite(FRONT_LEFT_MOTOR, 128);
 	analogWrite(BACK_LEFT_MOTOR, 128);
-
-	// Initial calibrate of the Hall Effect sensor
-	calibrate(magneticFieldPin, min_max);
 }
 
 // Call the server polling function in the main loop
@@ -97,7 +94,21 @@ void loop()
 	}
 
 	std::unordered_map<std::string, double> packetData = receiver.handleUDPPacket();
-	receiver.sendUDPPacket("Lorem ipsum", 0, 0);
+	std::unordered_map<std::string, double> sensorData = receiver.handleWirePacket();
+	
+	std::string name;
+	if (!name.empty()) {
+		name = Receiver::decodeFromASCII(sensorData["N"]);
+	}
+	else name = "None";
+
+	if (!sensorData.empty()) {
+		receiver.sendUDPPacket(name, sensorData["A"], sensorData["M"]);
+	}
+	else {
+		receiver.sendUDPPacket("No", "0", "0");
+	}
+
 	buzzer.loop();
 
 	if (!packetData.empty()) {
@@ -116,6 +127,8 @@ void loop()
 		if (packetData["Chorus"]) {
 			buzzer.playChorus();
 		}
+		if (packetData["Calibrate"]) {
+			receiver.sendWirePacket(CALIBRATE_FUNCTION);
+		}
 	}
-  	// getMagneticField(magneticFieldPin, min_max); // Crashes program when buzzer called
 }

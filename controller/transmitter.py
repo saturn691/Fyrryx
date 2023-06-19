@@ -93,7 +93,8 @@ class Transmitter:
             "Turning" : axis_inputs["Right Stick X"],
             "Horn" : button_inputs["B"],
             "Intro" : button_inputs["D-pad Up"],
-            "Chorus" : button_inputs["D-pad Down"]
+            "Chorus" : button_inputs["D-pad Down"],
+            "Calibrate": button_inputs["Y"]
         }  
         
         return data
@@ -127,6 +128,7 @@ class Transmitter:
         data["Horn"] = 1 if pygame.K_f in keyboardData else 0
         data["Intro"] = 1 if pygame.K_1 in keyboardData else 0
         data["Chorus"] = 1 if pygame.K_2 in keyboardData else 0
+        data["Calibrate"] = 1 if pygame.K_c in keyboardData else 0
 
         return data
 

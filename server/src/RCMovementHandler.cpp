@@ -76,11 +76,17 @@ void RCMovementHandler::twoDimensionalMove(double x, double y, double turning) {
     analogWrite(front_right_pin, mappedRightFront);
     analogWrite(front_left_pin, mappedLeftFront);
     analogWrite(back_left_pin, mappedLeftBack); 
+    
+    Serial.print("mappedRightFront = "); Serial.print(mappedRightFront); 
+    Serial.print("mappedLeftFront = "); Serial.print(mappedLeftFront);
+    Serial.print("mappedRightBack = "); Serial.print(mappedRightBack);
+    Serial.print("mappedLeftBack = "); Serial.print(mappedLeftBack);
+    Serial.println();
 } 
 
 
 void RCMovementHandler::move(double x, double y, double turning) {
-    if ((x < 0.5) && (x > -0.5) && (y < 0.5) && (y >-0.5)) {
+    if ((x < 0.5) && (x > -0.5) && (y < 0.5) && (y >-0.5) && (turning < 0.5) && (turning > -0.5)) {
         analogWrite(back_right_pin, 128);
         analogWrite(front_right_pin, 128);
         analogWrite(front_left_pin, 128);
