@@ -36,4 +36,5 @@ A picture is shown below.
 
 ![Full Rover](<images/full_rover.jpg>)
 
-<video src="images/rover.mp4" controls title="Rover in Action"></video>
+https://github.com/saturn691/Fyrryx/assets/113542065/9ff3c450-ffa2-4dd1-870e-391deb3f8cec
+
