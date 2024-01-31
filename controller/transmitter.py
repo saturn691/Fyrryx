@@ -11,6 +11,7 @@ import pygame
 import json
 import time
 import subprocess
+import platform
 
 class Transmitter:
     # This sets up the UDP socket and other member data
@@ -38,15 +39,29 @@ class Transmitter:
 
     # Returns the ssid of the network if connected
     def __get_ssid(self):
-        try:
-            output = subprocess.check_output(["netsh", "wlan", "show", "interfaces"], universal_newlines=True)
-            lines = output.splitlines()
-            for line in lines:
-                if "SSID" in line:
-                    ssid = line.split(":")[1].strip()
-                    return ssid
-        except subprocess.CalledProcessError:
-            pass
+        if platform.system() == "Windows":
+            try:
+                output = subprocess.check_output(
+                    ["netsh", "wlan", "show", "interfaces"], 
+                    universal_newlines=True
+                )
+                lines = output.splitlines()
+                for line in lines:
+                    if "SSID" in line:
+                        ssid = line.split(":")[1].strip()
+                        return ssid
+            except subprocess.CalledProcessError:
+                pass
+        elif platform.system() == "Linux":
+            try:
+                output = subprocess.check_output(
+                    ["iwgetid", "-r"], 
+                    universal_newlines=True
+                )
+                ssid = output.strip()
+                return ssid
+            except subprocess.CalledProcessError:
+                pass
         return None
 
     # Blocking function that will continiously search for the server
